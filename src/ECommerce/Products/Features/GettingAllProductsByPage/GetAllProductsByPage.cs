@@ -12,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.EntityFrameworkCore;
 using Sieve.Services;
 
 public record GetProductsByPage
@@ -89,7 +90,7 @@ public class GetProductByPageHandler : IRequestHandler<GetProductsByPage, GetPro
     {
         Guard.Against.Null(request, nameof(request));
 
-        var pageList = await _eCommerceDbContext.Products.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
+        var pageList = await _eCommerceDbContext.Products.AsNoTracking().ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
 
         var result = _mapper.Map<PageList<ProductDto>>(pageList);
 

@@ -2,7 +2,8 @@
 
 public enum ProductStatus
 {
+    None = 0,
     InStock = 1,
-    Sold,
-    Damaged
+    Sold = 2,
+    Damaged = 3
 }

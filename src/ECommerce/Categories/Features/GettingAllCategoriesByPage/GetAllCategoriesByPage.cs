@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 using Ardalis.GuardClauses;
+using Microsoft.EntityFrameworkCore;
 
 public record GetCategoriesByPage
     (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageQuery<GetCategoriesByPageResult>;
@@ -89,7 +90,7 @@ public class GetCategoriesByPageHandler : IRequestHandler<GetCategoriesByPage, G
     {
         Guard.Against.Null(request, nameof(request));
 
-        var pageList = await _eCommerceDbContext.Categories.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
+        var pageList = await _eCommerceDbContext.Categories.AsNoTracking().ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
 
         var result = _mapper.Map<PageList<CategoryDto>>(pageList);
 
