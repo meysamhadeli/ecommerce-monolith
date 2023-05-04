@@ -8,6 +8,12 @@ public record Address
     {
 
     }
+
+    public override string ToString()
+    {
+        return Value;
+    }
+
     public string Value { get; set; }
 
     private Address(string street, string city, string state)

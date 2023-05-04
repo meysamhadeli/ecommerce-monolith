@@ -9,6 +9,11 @@ public record Description
 
     public string Value { get; set; }
 
+    public override string ToString()
+    {
+        return Value;
+    }
+
     private Description(string value)
     {
         if (string.IsNullOrWhiteSpace(value))

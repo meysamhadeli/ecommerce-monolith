@@ -8,6 +8,11 @@ public record Name
     private const int MinLength = 2;
     public string Value { get; set; }
 
+    public override string ToString()
+    {
+        return Value;
+    }
+
     private Name(string value)
     {
         if (string.IsNullOrWhiteSpace(value))

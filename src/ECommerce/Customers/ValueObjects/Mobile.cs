@@ -7,6 +7,11 @@ public record Mobile
 {
     public string Value { get; set; }
 
+    public override string ToString()
+    {
+        return Value;
+    }
+
     private Mobile(string value)
     {
         // Basic validation rule: phone number must be a 10-digit number

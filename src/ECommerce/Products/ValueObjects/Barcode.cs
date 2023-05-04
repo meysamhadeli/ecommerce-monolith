@@ -7,6 +7,11 @@ public record Barcode
     private const int MaxLength = 20;
     public string Value { get; set; }
 
+    public override string ToString()
+    {
+        return Value;
+    }
+
     private Barcode(string value)
     {
         if (string.IsNullOrWhiteSpace(value))

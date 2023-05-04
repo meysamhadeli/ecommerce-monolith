@@ -1,6 +1,5 @@
-﻿namespace ECommerce.Products.Features.GettingAllProductsByPage;
+﻿namespace ECommerce.Categories.Features.GettingAllCategoriesByPage;
 
-using Ardalis.GuardClauses;
 using AutoMapper;
 using BuildingBlocks.Core;
 using BuildingBlocks.Core.Pagination;
@@ -13,20 +12,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
+using Ardalis.GuardClauses;
 
-public record GetProductsByPage
-    (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageQuery<GetProductsByPageResult>;
+public record GetCategoriesByPage
+    (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageQuery<GetCategoriesByPageResult>;
 
-public record GetProductsByPageRequestDto
+public record GetCategoriesByPageRequestDto
     (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageRequest;
 
-public record GetProductsByPageResult(IPageList<ProductDto> Products);
+public record GetCategoriesByPageResult(IPageList<CategoryDto> Categories);
 
-public record GetProductsByPageResponseDto(IPageList<ProductDto> Products);
+public record GetCategoriesByPageResponseDto(IPageList<CategoryDto> Categories);
 
-public class GetProductsByPageValidator : AbstractValidator<GetProductsByPage>
+public class GetCategoriesByPageValidator : AbstractValidator<GetCategoriesByPage>
 {
-    public GetProductsByPageValidator()
+    public GetCategoriesByPageValidator()
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)
@@ -38,28 +38,28 @@ public class GetProductsByPageValidator : AbstractValidator<GetProductsByPage>
     }
 }
 
-public class GetProductsByPageEndpoint : IMinimalEndpoint
+public class GetCategoriesEndpoint : IMinimalEndpoint
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet($"{EndpointConfig.BaseApiPath}/catalog/get-products-by-page", async (
-                [AsParameters] GetProductsByPageRequestDto request,
+        builder.MapGet($"{EndpointConfig.BaseApiPath}/catalog/get-categories-by-page", async (
+                [AsParameters] GetCategoriesByPageRequestDto request,
                 IMediator mediator, IMapper mapper,
                 CancellationToken cancellationToken) =>
             {
-                var command = mapper.Map<GetProductsByPage>(request);
+                var command = mapper.Map<GetCategoriesByPage>(request);
 
                 var result = await mediator.Send(command, cancellationToken);
 
-                var response = mapper.Map<GetProductsByPageResponseDto>(result);
+                var response = mapper.Map<GetCategoriesByPageResponseDto>(result);
 
                 return Results.Ok(response);
             })
-            .WithName("Get Products By Page")
-            .WithSummary("Get Products By Page")
-            .WithDescription("Get Products By Page")
+            .WithName("Get Categories By Page")
+            .WithSummary("Get Categories By Page")
+            .WithDescription("Get Categories By Page")
             .WithApiVersionSet(builder.NewApiVersionSet("Catalog").Build())
-            .Produces<GetProductsByPageResponseDto>()
+            .Produces<GetCategoriesByPageResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .WithOpenApi()
             .HasApiVersion(1.0);
@@ -68,13 +68,13 @@ public class GetProductsByPageEndpoint : IMinimalEndpoint
     }
 }
 
-public class GetProductByPageHandler : IRequestHandler<GetProductsByPage, GetProductsByPageResult>
+public class GetCategoriesByPageHandler : IRequestHandler<GetCategoriesByPage, GetCategoriesByPageResult>
 {
     private readonly ISieveProcessor _sieveProcessor;
     private readonly IMapper _mapper;
     private readonly ECommerceDbContext _eCommerceDbContext;
 
-    public GetProductByPageHandler(
+    public GetCategoriesByPageHandler(
         ISieveProcessor sieveProcessor,
         IMapper mapper,
         ECommerceDbContext eCommerceDbContext
@@ -85,14 +85,14 @@ public class GetProductByPageHandler : IRequestHandler<GetProductsByPage, GetPro
         _eCommerceDbContext = eCommerceDbContext;
     }
 
-    public async Task<GetProductsByPageResult> Handle(GetProductsByPage request, CancellationToken cancellationToken)
+    public async Task<GetCategoriesByPageResult> Handle(GetCategoriesByPage request, CancellationToken cancellationToken)
     {
         Guard.Against.Null(request, nameof(request));
 
-        var pageList = await _eCommerceDbContext.Products.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
+        var pageList = await _eCommerceDbContext.Categories.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
 
-        var result = _mapper.Map<PageList<ProductDto>>(pageList);
+        var result = _mapper.Map<PageList<CategoryDto>>(pageList);
 
-        return new GetProductsByPageResult(result);
+        return new GetCategoriesByPageResult(result);
     }
 }
