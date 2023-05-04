@@ -3,6 +3,7 @@
 namespace BuildingBlocks.Core.Model;
 
 public abstract record Aggregate : Aggregate<Guid>;
+public abstract record Entity : Entity<Guid>;
 
 public abstract record Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {

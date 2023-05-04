@@ -141,7 +141,7 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
 
             if (existItem is null)
             {
-                throw new OrderItemNotExistInInventoryException(orderItem.ProductId);
+                throw new OrderItemNotExistInInventoryException(orderItem.ProductId, orderItem.Quantity);
             }
 
             inventoryItems.Add(existItem);
@@ -149,7 +149,7 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
 
         var order = Order.Create(OrderId.Of(request.Id), customer, request.DiscountType, request.DiscountValue);
 
-        var orderItems = request.Items?.MapTo(order.Id, inventoryItems);
+        var orderItems = request.Items?.MapTo(order.Id, inventoryItems).ToList();
 
         order.AddItems(orderItems);
 
@@ -158,6 +158,13 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
         var shipmentOrderResult = order.ApplyShipment();
 
         order.ApplyDiscount(request.DiscountType, request.DiscountValue);
+
+        await _eCommerceDbContext.Orders.AddAsync(order, cancellationToken);
+
+        if (orderItems != null)
+        {
+            await _eCommerceDbContext.OrderItems.AddRangeAsync(orderItems, cancellationToken);
+        }
 
         return new RegisterNewOrderResult(order.Id.Value, customer.Id.Value, order.Status.ToString(), order.TotalPrice.Value,
             order.OrderDate, shipmentOrderResult.RegularShipmentItems, shipmentOrderResult.ExpressShipmentItems,

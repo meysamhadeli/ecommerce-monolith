@@ -1,6 +1,6 @@
 namespace BuildingBlocks.Core.Model;
 
-public interface IEntity<T>: IVersion
+public interface IEntity<out T> : IVersion
 {
     T Id { get; }
     public DateTime? CreatedAt { get; set; }
@@ -12,5 +12,4 @@ public interface IEntity<T>: IVersion
 
 public interface IEntity : IEntity<Guid>
 {
-
 }

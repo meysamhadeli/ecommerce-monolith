@@ -7,7 +7,7 @@ using Models;
 using Products.ValueObjects;
 using ValueObjects;
 
-public static class ManualMappings
+public static class OrderManualMappings
 {
     public static IEnumerable<OrderItem> MapTo(this IEnumerable<ItemDto> items, OrderId id,
         IEnumerable<InventoryItems> inventoryItems)
