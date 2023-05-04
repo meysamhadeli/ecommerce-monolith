@@ -15,7 +15,7 @@ public static class ShipmentStrategyFactory
             case ShipmentType.ExpressPost:
                 return new ExpressPostStrategy();
             default:
-                throw new ArgumentException("Invalid shipment type");
+                return null;
         }
     }
 }

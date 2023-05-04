@@ -1,7 +1,8 @@
 namespace BuildingBlocks.Core.Model;
 
-public interface IEntity: IVersion
+public interface IEntity<T>: IVersion
 {
+    T Id { get; }
     public DateTime? CreatedAt { get; set; }
     public long? CreatedBy { get; set; }
     public DateTime? LastModified { get; set; }
@@ -9,7 +10,7 @@ public interface IEntity: IVersion
     public bool IsDeleted { get; set; }
 }
 
-public interface IVersion
+public interface IEntity : IEntity<Guid>
 {
-    long Version { get; set; }
+
 }

@@ -4,7 +4,6 @@ using ECommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -12,11 +11,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ECommerce.Data.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    [Migration("20230504125224_Init")]
-    partial class Init
+    partial class ECommerceDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,9 +176,6 @@ namespace ECommerce.Data.Migrations
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -428,6 +422,23 @@ namespace ECommerce.Data.Migrations
                         .WithMany()
                         .HasForeignKey("CustomerId");
 
+                    b.OwnsOne("ECommerce.Orders.ValueObjects.OrderDate", "OrderDate", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<DateTime>("Value")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("OrderDate");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Order");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
                     b.OwnsOne("ECommerce.Orders.ValueObjects.TotalPrice", "TotalPrice", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
@@ -446,6 +457,8 @@ namespace ECommerce.Data.Migrations
                         });
 
                     b.Navigation("Customer");
+
+                    b.Navigation("OrderDate");
 
                     b.Navigation("TotalPrice");
                 });

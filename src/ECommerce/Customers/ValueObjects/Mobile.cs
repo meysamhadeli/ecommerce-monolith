@@ -27,4 +27,6 @@ public record Mobile
     {
         return new Mobile(number);
     }
+
+    public static implicit operator string(Mobile mobile) => mobile.Value;
 }

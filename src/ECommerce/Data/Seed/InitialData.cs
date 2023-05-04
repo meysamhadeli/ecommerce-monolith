@@ -44,19 +44,19 @@ public static class InitialData
         {
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c0")),
                 ProductName.Of("Cake"), Barcode.Of("1234567890"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), ECommerce.Products.ValueObjects.Price.Of(10), ProfitMargin.Of(0),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(50000), ProfitMargin.Of(0),
                 Description.Of("It's a Cake")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")),
                 ProductName.Of("Pizza"), Barcode.Of("1234567891"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), ECommerce.Products.ValueObjects.Price.Of(20), ProfitMargin.Of(0),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(60000), ProfitMargin.Of(0),
                 Description.Of("It's a Pizza")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c2")),
                 ProductName.Of("Drink"), Barcode.Of("1234567892"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), ECommerce.Products.ValueObjects.Price.Of(15), ProfitMargin.Of(0),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(70000), ProfitMargin.Of(0),
                 Description.Of("It's a Drink")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c3")),
                 ProductName.Of("Keyboard"), Barcode.Of("1234567893"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c9")), ECommerce.Products.ValueObjects.Price.Of(30), ProfitMargin.Of(0),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c9")), Price.Of(80000), ProfitMargin.Of(0),
                 Description.Of("It's a Keyboard")),
         };
 

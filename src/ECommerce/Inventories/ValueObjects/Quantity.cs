@@ -18,6 +18,6 @@ public record Quantity
     {
         return new Quantity(value);
     }
-    public static implicit operator int(Quantity quantity) => quantity.Value;
+    public static implicit operator int(Quantity quantity) => quantity?.Value ?? 0;
 }
 

@@ -18,5 +18,7 @@ public record TotalPrice
     {
         return new TotalPrice(value);
     }
+
+    public static implicit operator decimal(TotalPrice totalPrice) => totalPrice?.Value ?? 0;
 }
 

@@ -15,7 +15,7 @@ public static class DiscountStrategyFactory
             case DiscountType.AmountDiscount:
                 return new AmountDiscountStrategy(value);
             default:
-                throw new ArgumentException("Invalid discount type");
+                return null;
         }
     }
 }

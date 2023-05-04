@@ -5,13 +5,13 @@ using ECommerce.Products.Models;
 using ECommerce.Products.ValueObjects;
 using ValueObjects;
 
-public record OrderItem : Aggregate<OrderItemId>
+public record OrderItem : Entity<OrderItemId>
 {
-    public ProductId ProductId { get; private set; }
-    public Product Product { get; private set; }
-    public OrderId OrderId { get; private set; }
-    public Order Order { get; private set; }
-    public Quantity Quantity { get; private set; }
+    public ProductId ProductId { get; init; }
+    public Product Product { get; init; }
+    public OrderId OrderId { get; init; }
+    public Order Order { get; init; }
+    public Quantity Quantity { get; init; }
 
     public decimal CalculatePrice()
     {

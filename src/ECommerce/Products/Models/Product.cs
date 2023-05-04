@@ -17,19 +17,8 @@ public record Product : Aggregate<ProductId>
     public Category? Category { get; private set; }
     public CategoryId CategoryId { get; private set; }
     public bool IsBreakable { get; private set; }
-    public Price Price { get; set; }
-
-    public NetPrice? NetPrice
-    {
-        get
-        {
-            return _netPrice;
-        }
-        set
-        {
-           _netPrice = value;
-        }
-    }
+    public Price Price { get; private set; }
+    public NetPrice NetPrice {get; private set;}
 
     public ProfitMargin? ProfitMargin { get; set; }
 
@@ -49,7 +38,8 @@ public record Product : Aggregate<ProductId>
             Description = description,
             Price = price,
             ProfitMargin = profitMargin,
-            IsDeleted = isDeleted
+            IsDeleted = isDeleted,
+            NetPrice = NetPrice.Of(price.Value + profitMargin?.Value ?? 0),
         };
 
         var @event = new ProductCreatedDomainEvent(product.Id, product.Name, product.Barcode,

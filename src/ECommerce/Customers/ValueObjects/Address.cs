@@ -32,4 +32,6 @@ public record Address
     {
         return new Address(street, city, state);
     }
+
+    public static implicit operator string(Address address) => address.Value;
 }

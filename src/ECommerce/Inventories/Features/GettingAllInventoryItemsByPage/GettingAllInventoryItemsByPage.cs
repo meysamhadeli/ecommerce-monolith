@@ -38,6 +38,14 @@ public class GetAllInventoryItemsByPageValidator : AbstractValidator<GetAllInven
         RuleFor(x => x.PageSize)
             .GreaterThanOrEqualTo(1)
             .WithMessage("PageSize should at least greater than or equal to 1.");
+
+        RuleFor(x => x.Status).Must(p => (p.GetType().IsEnum &&
+                                          p == ProductStatus.None) ||
+                                         p == ProductStatus.InStock ||
+                                         p == ProductStatus.Damaged ||
+                                         p == ProductStatus.Sold)
+            .WithMessage("Status must be None, InStock, Damaged or Sold");
+
     }
 }
 

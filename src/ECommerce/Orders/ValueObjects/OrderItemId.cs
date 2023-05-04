@@ -18,4 +18,6 @@ public record OrderItemId
     {
         return new OrderItemId(value);
     }
+
+    public static implicit operator Guid(OrderItemId orderItemId) => orderItemId.Value;
 }

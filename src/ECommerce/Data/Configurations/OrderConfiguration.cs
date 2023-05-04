@@ -36,6 +36,16 @@ public class OrderConfiguration: IEntityTypeConfiguration<Order>
             }
         );
 
+        builder.OwnsOne(
+            x => x.OrderDate,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName(nameof(Order.OrderDate))
+                    .IsRequired();
+            }
+        );
+
         builder.HasOne(x => x.Customer).WithMany().HasForeignKey(x => x.CustomerId);
     }
 }

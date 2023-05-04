@@ -8,7 +8,7 @@ public record Quantity
 
     private Quantity(int value)
     {
-        if (value < 0)
+        if (value < 1)
             throw new InvalidQuantityException(value);
 
         Value = value;
@@ -18,4 +18,6 @@ public record Quantity
     {
         return new Quantity(value);
     }
+
+    public static implicit operator int(Quantity quantity) => quantity?.Value ?? 0;
 }

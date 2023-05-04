@@ -31,4 +31,6 @@ public record Name
     {
         return new Name(value);
     }
+
+    public static implicit operator string(Name name) => name.Value;
 }
