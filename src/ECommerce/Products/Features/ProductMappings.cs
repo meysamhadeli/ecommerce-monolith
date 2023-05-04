@@ -24,6 +24,6 @@ public class ProductMappings : Profile
                 new ProductDto(x.Id, x.Name, x.Barcode, x.Description, x.CategoryId, x.IsBreakable, x.Price,
                     x.ProfitMargin, x.NetPrice));
 
-        CreateMap<IPageList<Product>, IPageList<ProductDto>>();
+        CreateMap<PageList<Product>, PageList<ProductDto>>();
     }
 }

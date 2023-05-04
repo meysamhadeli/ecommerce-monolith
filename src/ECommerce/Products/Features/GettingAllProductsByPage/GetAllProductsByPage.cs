@@ -15,9 +15,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 
-public record GetProductsByPage(int PageNumber, int PageSize, string Filters, string SortOrder) : IPageQuery<GetProductsByPageResult>;
-public record GetProductsByPageRequestDto(int PageNumber, int PageSize, string Filters, string SortOrder) : IPageRequest;
+public record GetProductsByPage
+    (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageQuery<GetProductsByPageResult>;
+
+public record GetProductsByPageRequestDto
+    (int PageNumber, int PageSize, string Filters, string SortOrder) : IPageRequest;
+
 public record GetProductsByPageResult(IPageList<ProductDto> Products);
+
 public record GetProductsByPageResponseDto(IPageList<ProductDto> Products);
 
 public class GetProductsByPageValidator : AbstractValidator<GetProductsByPage>
@@ -38,7 +43,8 @@ public class CreateProductEndpoint : IMinimalEndpoint
 {
     public IEndpointRouteBuilder MapEndpoint(IEndpointRouteBuilder builder)
     {
-        builder.MapGet($"{EndpointConfig.BaseApiPath}/catalog/get-products-by-page", async ([AsParameters] GetProductsByPageRequestDto request,
+        builder.MapGet($"{EndpointConfig.BaseApiPath}/catalog/get-products-by-page", async (
+                [AsParameters] GetProductsByPageRequestDto request,
                 IMediator mediator, IMapper mapper,
                 CancellationToken cancellationToken) =>
             {
@@ -82,22 +88,12 @@ public class GetProductByPageHandler : IRequestHandler<GetProductsByPage, GetPro
 
     public async Task<GetProductsByPageResult> Handle(GetProductsByPage request, CancellationToken cancellationToken)
     {
-        try
-        {
-            Guard.Against.Null(request, nameof(request));
+        Guard.Against.Null(request, nameof(request));
 
-            var pageList = await _eCommerceDbContext.Products.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
+        var pageList = await _eCommerceDbContext.Products.ApplyPagingAsync(request, _sieveProcessor, cancellationToken);
 
-            var result = _mapper.Map<IPageList<ProductDto>>(pageList);
+        var result = _mapper.Map<PageList<ProductDto>>(pageList);
 
-            return new GetProductsByPageResult(null);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
+        return new GetProductsByPageResult(result);
     }
 }
-
