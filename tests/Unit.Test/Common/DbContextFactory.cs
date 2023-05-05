@@ -57,16 +57,20 @@ public static class DbContextFactory
         {
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c0")),
                 ProductName.Of("Cake"), Barcode.Of("1234567890"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Description.Of("It's a Cake")),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(50000), ProfitMargin.Of(0),
+                Description.Of("It's a Cake")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")),
                 ProductName.Of("Pizza"), Barcode.Of("1234567891"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Description.Of("It's a Pizza")),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(60000), ProfitMargin.Of(0),
+                Description.Of("It's a Pizza")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c2")),
                 ProductName.Of("Drink"), Barcode.Of("1234567892"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Description.Of("It's a Drink")),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")), Price.Of(70000), ProfitMargin.Of(0),
+                Description.Of("It's a Drink")),
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c3")),
                 ProductName.Of("Keyboard"), Barcode.Of("1234567893"), true,
-                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c9")), Description.Of("It's a Keyboard")),
+                CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c9")), Price.Of(80000), ProfitMargin.Of(0),
+                Description.Of("It's a Keyboard")),
         };
 
         context.Products.AddRange(products);
@@ -90,8 +94,7 @@ public static class DbContextFactory
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c3")), Quantity.Of(4), ProductStatus.Sold),
             InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
-                ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")), Quantity.Of(3),
-                ProductStatus.Damaged),
+                ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")), Quantity.Of(3), ProductStatus.Damaged),
         };
 
         context.InventoryItems.AddRange(inventoryItems);

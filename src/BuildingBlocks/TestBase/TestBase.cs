@@ -312,19 +312,19 @@ public class TestWriteFixture<TEntryPoint, TWContext> : TestFixture<TEntryPoint>
     }
 
     public Task<T> FindAsync<T>(Guid id)
-        where T : class, IEntity<Guid>
+        where T : class, IEntity
     {
         return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
     }
 
     public Task<T> FindAsync<T,Key>(Key id)
-        where T : class, IEntity<Guid>
+        where T : class, IEntity
     {
         return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
     }
 
     public Task<List<T>> GetAllAsync<T>()
-        where T : class, IEntity<Guid>
+        where T : class, IEntity
     {
         return ExecuteDbContextAsync(db => db.Set<T>().ToListAsync());
     }
