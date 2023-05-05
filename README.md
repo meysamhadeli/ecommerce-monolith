@@ -1,4 +1,4 @@
-# 🛍️ ECommerece
+# 🛍️ Shopping
            
 > **The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and DDD in .Net. The primary focus of this project is not centered on business concerns.** 🚀
 
@@ -34,12 +34,13 @@
 - ✔️ **[`Swagger & Swagger UI`](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)** - Swagger tools for documenting API's built on ASP.NET Core
 - ✔️ **[`Serilog`](https://github.com/serilog/serilog)** - Simple .NET logging with fully-structured events
 - ✔️ **[`Scrutor`](https://github.com/khellang/Scrutor)** - Assembly scanning and decoration extensions for Microsoft.Extensions.DependencyInjection
-- ✔️ **[`AutoMapper`](https://github.com/AutoMapper/AutoMapper)** - Convention-based object-object mapper in .NET.
+- ✔️ **[`AutoMapper`](https://github.com/AutoMapper/AutoMapper)** - Convention-based object-object mapper in .NET
 - ✔️ **[`NewId`](https://github.com/phatboyg/NewId)** - NewId can be used as an embedded unique ID generator that produces 128 bit (16 bytes) sequential IDs
-- ✔️ **[`xUnit.net`](https://github.com/xunit/xunit)** - A free, open source, community-focused unit testing tool for the .NET Framework.
-- ✔️ **[`Respawn`](https://github.com/jbogard/Respawn)** - Respawn is a small utility to help in resetting test databases to a clean state.
-- ✔️ **[`Testcontainers`](https://github.com/testcontainers/testcontainers-dotnet)** - Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers.
-
+- ✔️ **[`Sieve`](https://github.com/Biarity/Sieve)** - Sieve is a framework for .NET Core that adds sorting, filtering, and pagination functionality out of the box
+- ✔️ **[`xUnit.net`](https://github.com/xunit/xunit)** - A free, open source, community-focused unit testing tool for the .NET Framework
+- ✔️ **[`Respawn`](https://github.com/jbogard/Respawn)** - Respawn is a small utility to help in resetting test databases to a clean state
+- ✔️ **[`Testcontainers`](https://github.com/testcontainers/testcontainers-dotnet)** - Testcontainers for .NET is a library to support tests with throwaway instances of Docker containers
+- ✔️ **[`Bogus`](https://github.com/bchavez/Bogus)** - Bogus is a simple fake data generator for .NET
 
 ## Structure of Project
 
