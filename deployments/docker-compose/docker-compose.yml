@@ -15,16 +15,16 @@ services:
 
 
   #######################################################
-  #  Ecommerce
+  #  Shopping
   #######################################################
-  ecommerce:
-    image: ecommerce
+  shopping:
+    image: shopping
     build:
       args:
         Version: "1"
       context: ../../
       dockerfile: Dockerfile
-    container_name: ecommerce
+    container_name: shopping
     ports:
       - 5000:80
     environment:
