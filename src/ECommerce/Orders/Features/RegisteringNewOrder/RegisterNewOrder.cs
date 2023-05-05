@@ -43,6 +43,8 @@ public record OrderTotalPriceAddedDomainEvent
 (Guid Id, Guid CustomerId, DateTime OrderDate, decimal TotalPrice,
     OrderStatus Status, IEnumerable<OrderItemDto> OrderItems, bool isDeleted = false) : IDomainEvent;
 
+public record OrderItemsAddedToOrderDomainEvent (IEnumerable<OrderItemDto> OrderItems) : IDomainEvent;
+
 public record RegisterNewOrder(Guid CustomerId,
     IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue) : ICommand<RegisterNewOrderResult>
 {

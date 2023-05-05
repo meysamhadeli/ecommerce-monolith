@@ -8,7 +8,7 @@ public record OrderDate
 
     private OrderDate(DateTime value)
     {
-        if (value.Hour > 8 && value.Hour < 19)
+        if (value.Hour < 8 && value.Hour > 19)
         {
             throw new InvalidDateTimeRangeException();
         }

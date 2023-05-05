@@ -19,7 +19,6 @@ public record Order : Aggregate<OrderId>
     public TotalPrice TotalPrice { get; private set; }
     public OrderDate OrderDate { get; private set; }
 
-
     public static Order Create(OrderId id, Customer customer, DiscountType discountType,
         decimal discountValue,
         bool isDeleted = false)
@@ -43,10 +42,16 @@ public record Order : Aggregate<OrderId>
         return order;
     }
 
-
     public void AddItems(IEnumerable<OrderItem> items)
     {
-        _orderItems.AddRange(items);
+        if (items is not null && items.Any())
+        {
+            _orderItems.AddRange(items);
+
+            var @event = new OrderItemsAddedToOrderDomainEvent(items.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity)));
+
+            this.AddDomainEvent(@event);
+        }
     }
 
     public void ApplyDiscount(DiscountType discountType, decimal discountValue)

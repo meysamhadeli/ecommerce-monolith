@@ -2,14 +2,13 @@
 
 namespace BuildingBlocks.Core.Model;
 
-public interface IAggregate<out T> : IEntity<T>
+public interface IAggregate: IEntity
 {
     IReadOnlyList<IDomainEvent> DomainEvents { get; }
     IEvent[] ClearDomainEvents();
 }
 
-public interface IAggregate : IAggregate<Guid>
+public interface IAggregate<out T> : IAggregate
 {
-    IReadOnlyList<IDomainEvent> DomainEvents { get; }
-    IEvent[] ClearDomainEvents();
+    T Id { get; }
 }

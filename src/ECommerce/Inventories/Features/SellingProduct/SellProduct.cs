@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Orders.Features.RegisteringNewOrder;
 using Products.ValueObjects;
 using ValueObjects;
 
@@ -97,6 +98,50 @@ public class SellProductHandler : ICommandHandler<SellProduct>
         _eCommerceDbContext.InventoryItems.Update(productsInventoryItems);
 
         return Unit.Value;
+    }
+
+
+    public class UpdateInventoryWhenOrderItemsAddedToOrderDomainEventHandler : INotificationHandler<OrderItemsAddedToOrderDomainEvent>
+    {
+        private readonly ECommerceDbContext _eCommerceDbContext;
+
+        public UpdateInventoryWhenOrderItemsAddedToOrderDomainEventHandler(ECommerceDbContext eCommerceDbContext)
+        {
+            _eCommerceDbContext = eCommerceDbContext;
+        }
+
+        public async Task Handle(OrderItemsAddedToOrderDomainEvent notification, CancellationToken cancellationToken)
+        {
+            Guard.Against.Null(notification, nameof(notification));
+
+            if (notification.OrderItems.Any())
+            {
+                foreach (var notificationOrderItem in notification.OrderItems)
+                {
+                    var productsInventoryItems = await _eCommerceDbContext.InventoryItems
+                        .SingleOrDefaultAsync(
+                            x => x.ProductId == ProductId.Of(notificationOrderItem.ProductId) && x.Status == ProductStatus.InStock,
+                            cancellationToken: cancellationToken);
+
+                    if (productsInventoryItems is null)
+                    {
+                        throw new ProductNotExistToInventoryException();
+                    }
+
+                    if (notificationOrderItem.Quantity > productsInventoryItems.Quantity.Value)
+                    {
+                        throw new OutOfRangeQuantityException(notificationOrderItem.Quantity, productsInventoryItems.Quantity.Value);
+                    }
+
+                    productsInventoryItems.SellProduct(productsInventoryItems.Id, productsInventoryItems.InventoryId,
+                        ProductId.Of(notificationOrderItem.ProductId), Quantity.Of(notificationOrderItem.Quantity));
+
+                    _eCommerceDbContext.InventoryItems.Update(productsInventoryItems);
+                }
+            }
+
+            await _eCommerceDbContext.ExecuteTransactionalAsync(cancellationToken);
+        }
     }
 
     public class ProductSoldDomainEventHandler : INotificationHandler<ProductSoldDomainEvent>
