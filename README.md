@@ -2,7 +2,7 @@
            
 > **The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and DDD in .Net. The primary focus of this project is not centered on business concerns.** 🚀
 
-<a href="https://gitpod.io/#https://github.com/meysamhadeli/ecommerce"><img alt="Open in Gitpod" src="https://gitpod.io/button/open-in-gitpod.svg"/></a>
+<a href="https://gitpod.io/#https://github.com/meysamhadeli/shopping"><img alt="Open in Gitpod" src="https://gitpod.io/button/open-in-gitpod.svg"/></a>
 
 # Table of Contents
 
@@ -76,4 +76,4 @@ docker-compose -f ./deployments/docker-compose/docker-compose.yml up -d
 ```
 
 ## License
-This project is made available under the MIT license. See [LICENSE](https://github.com/meysamhadeli/ecommerce/blob/main/LICENSE) for details.
+This project is made available under the MIT license. See [LICENSE](https://github.com/meysamhadeli/shopping/blob/main/LICENSE) for details.
