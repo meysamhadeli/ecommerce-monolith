@@ -10,5 +10,7 @@ public class FakeValidateCreateProduct : AutoFaker<CreateProduct>
         RuleFor(r => r.Name, _ => string.Empty);
         RuleFor(r => r.Barcode, _ => string.Empty);
         RuleFor(r => r.CategoryId, _ => Guid.Empty);
+        RuleFor(r => r.ProfitMargin, _ => -1);
+        RuleFor(r => r.Price, _ => -1);
     }
 }

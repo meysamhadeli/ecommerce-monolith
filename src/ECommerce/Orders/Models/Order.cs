@@ -21,6 +21,7 @@ public record Order : Aggregate<OrderId>
 
     public static Order Create(OrderId id, Customer customer, DiscountType discountType,
         decimal discountValue,
+        OrderDate? orderDate,
         bool isDeleted = false)
     {
         var order = new Order
@@ -30,7 +31,7 @@ public record Order : Aggregate<OrderId>
             CustomerId = customer.Id,
             TotalPrice = TotalPrice.Of(0),
             Status = OrderStatus.Pending,
-            OrderDate = OrderDate.Of(DateTime.Now),
+            OrderDate = orderDate,
             IsDeleted = isDeleted
         };
 
@@ -48,7 +49,10 @@ public record Order : Aggregate<OrderId>
         {
             _orderItems.AddRange(items);
 
-            var @event = new OrderItemsAddedToOrderDomainEvent(items.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity)));
+            var itemsDto = items?.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity))
+                .ToList();
+
+            var @event = new OrderItemsAddedToOrderDomainEvent(itemsDto);
 
             this.AddDomainEvent(@event);
         }

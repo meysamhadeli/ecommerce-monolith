@@ -14,6 +14,8 @@ using ProductName = ECommerce.Products.ValueObjects.Name;
 using InventoryName = ECommerce.Inventories.ValueObjects.Name;
 using System;
 using System.Collections.Generic;
+using ECommerce.Customers.Models;
+using ECommerce.Customers.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 public static class DbContextFactory
@@ -98,6 +100,14 @@ public static class DbContextFactory
         };
 
         context.InventoryItems.AddRange(inventoryItems);
+
+        var customers = new List<Customer>
+        {
+            Customer.Create(CustomerId.Of(new Guid("2c5c0000-97c6-fc34-fcd3-08db322230c0")), ECommerce.Customers.ValueObjects.Name.Of("Admin"), Mobile.Of("09360000000"), Address.Of("Tehran", "Tehran", "Rey") ),
+            Customer.Create(CustomerId.Of(new Guid("2c5c0000-97c6-fc34-fcd3-08db322230c1")), ECommerce.Customers.ValueObjects.Name.Of("User"), Mobile.Of("09361111111"), Address.Of("Tehran", "Tehran", "Mirdamad"))
+        };
+
+        context.Customers.AddRange(customers);
 
         context.SaveChanges();
     }

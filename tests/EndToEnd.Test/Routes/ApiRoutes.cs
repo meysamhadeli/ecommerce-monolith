@@ -13,10 +13,13 @@ public static class ApiRoutes
     public static class Inventory
     {
         public const string AddProductToInventory = $"{BaseApiPath}/inventory/add-product-to-inventory";
-        public const string ChangeProductStatus = $"{BaseApiPath}/inventory/change-product-status";
         public const string DamageProduct = $"{BaseApiPath}/inventory/damage-product";
         public const string SellProduct = $"{BaseApiPath}/inventory/sell-product";
-        public const string GetNumberOfProductsSeparated = $"{BaseApiPath}/inventory/get-number-of-products-separated";
+    }
+
+    public static class Order
+    {
+        public const string RegisterNewOrder = $"{BaseApiPath}/order/register-new-order";
     }
 }
 

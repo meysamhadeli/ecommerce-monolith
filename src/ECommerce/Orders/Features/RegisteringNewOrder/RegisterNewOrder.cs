@@ -46,13 +46,13 @@ public record OrderTotalPriceAddedDomainEvent
 public record OrderItemsAddedToOrderDomainEvent (IEnumerable<OrderItemDto> OrderItems) : IDomainEvent;
 
 public record RegisterNewOrder(Guid CustomerId,
-    IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue) : ICommand<RegisterNewOrderResult>
+    IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue, DateTime? OrderDate = null) : ICommand<RegisterNewOrderResult>
 {
     public Guid Id { get; init; } = NewId.NextGuid();
 }
 
 public record RegisterNewOrderRequestDto(Guid CustomerId,
-    IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue);
+    IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue, DateTime? OrderDate = null);
 
 public record RegisterNewOrderResult(Guid Id, Guid CustomerId, string Status, decimal TotalPrice,
     DateTime OrderDate, IEnumerable<OrderItemDto> RegularOrderItems, IEnumerable<OrderItemDto> ExpressOrderItems,
@@ -149,7 +149,7 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
             inventoryItems.Add(existItem);
         }
 
-        var order = Order.Create(OrderId.Of(request.Id), customer, request.DiscountType, request.DiscountValue);
+        var order = Order.Create(OrderId.Of(request.Id), customer, request.DiscountType, request.DiscountValue, OrderDate.Of(request.OrderDate ?? DateTime.Now));
 
         var orderItems = request.Items?.MapTo(order.Id, inventoryItems).ToList();
 

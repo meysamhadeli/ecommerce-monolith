@@ -38,6 +38,8 @@ public class CreateProductTests
         result.ShouldHaveValidationErrorFor(x => x.Name);
         result.ShouldHaveValidationErrorFor(x => x.Barcode);
         result.ShouldHaveValidationErrorFor(x => x.CategoryId);
+        result.ShouldHaveValidationErrorFor(x => x.ProfitMargin);
+        result.ShouldHaveValidationErrorFor(x => x.Price);
     }
 
     [Fact]
