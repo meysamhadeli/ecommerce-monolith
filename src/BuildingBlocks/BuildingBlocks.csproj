@@ -60,7 +60,7 @@
     <PackageReference Include="Unchase.Swashbuckle.AspNetCore.Extensions" Version="2.7.1" />
 
     <PackageReference Include="MassTransit" Version="8.0.12" />
-    
+
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
     <PackageReference Include="AutoBogus" Version="2.13.1" />
     <PackageReference Include="Bogus" Version="34.0.2" />
@@ -68,7 +68,12 @@
     <PackageReference Include="Respawn" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.2" />
+
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.27" />
+    <PackageReference Update="AsyncFixer" Version="1.6.0" />
     <PackageReference Update="Roslynator.Analyzers" Version="4.2.0" />
+    <PackageReference Update="Roslynator.CodeAnalysis.Analyzers" Version="4.2.0" />
+    <PackageReference Update="Roslynator.Formatting.Analyzers" Version="4.2.0" />
 
   </ItemGroup>
 
