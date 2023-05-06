@@ -20,6 +20,12 @@ using Microsoft.EntityFrameworkCore;
 
 public static class DbContextFactory
 {
+    public static List<Category> Categories { get; private set; }
+    public static List<Product> Products { get; private set;}
+    public static List<Inventory> Inventories { get; private set;}
+    public static List<InventoryItems> InventoryItems { get; private set;}
+    public static List<Customer> Customers { get; private set;}
+
     public static ECommerceDbContext Create()
     {
         var options = new DbContextOptionsBuilder<ECommerceDbContext>()
@@ -35,7 +41,7 @@ public static class DbContextFactory
 
     private static void EcommerceDataSeeder(ECommerceDbContext context)
     {
-        var categories = new List<Category>
+        Categories = new List<Category>
         {
             Category.Create(CategoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c8")),
                 CategoryName.Of("Food")),
@@ -43,9 +49,9 @@ public static class DbContextFactory
                 CategoryName.Of("Technology")),
         };
 
-        context.Categories.AddRange(categories);
+        context.Categories.AddRange(Categories);
 
-        var inventories = new List<Inventory>
+        Inventories = new List<Inventory>
         {
             Inventory.Create(InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
                 InventoryName.Of("Central-Inventory")),
@@ -53,9 +59,9 @@ public static class DbContextFactory
                 InventoryName.Of("Inventory-22")),
         };
 
-        context.Inventories.AddRange(inventories);
+        context.Inventories.AddRange(Inventories);
 
-        var products = new List<Product>
+        Products = new List<Product>
         {
             Product.Create(ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c0")),
                 ProductName.Of("Cake"), Barcode.Of("1234567890"), true,
@@ -75,39 +81,39 @@ public static class DbContextFactory
                 Description.Of("It's a Keyboard")),
         };
 
-        context.Products.AddRange(products);
+        context.Products.AddRange(Products);
 
-        var inventoryItems = new List<InventoryItems>
+        InventoryItems = new List<InventoryItems>
         {
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c0")), Quantity.Of(2)),
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")), Quantity.Of(1)),
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c2")), Quantity.Of(5)),
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c5")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c3")), Quantity.Of(4)),
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c5")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c3")), Quantity.Of(4), ProductStatus.Sold),
-            InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
+            ECommerce.Inventories.Models.InventoryItems.AddProductToInventory(InventoryItemsId.Of(NewId.NextGuid()),
                 InventoryId.Of(new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4")),
                 ProductId.Of(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1")), Quantity.Of(3), ProductStatus.Damaged),
         };
 
-        context.InventoryItems.AddRange(inventoryItems);
+        context.InventoryItems.AddRange(InventoryItems);
 
-        var customers = new List<Customer>
+        Customers = new List<Customer>
         {
             Customer.Create(CustomerId.Of(new Guid("2c5c0000-97c6-fc34-fcd3-08db322230c0")), ECommerce.Customers.ValueObjects.Name.Of("Admin"), Mobile.Of("09360000000"), Address.Of("Tehran", "Tehran", "Rey") ),
             Customer.Create(CustomerId.Of(new Guid("2c5c0000-97c6-fc34-fcd3-08db322230c1")), ECommerce.Customers.ValueObjects.Name.Of("User"), Mobile.Of("09361111111"), Address.Of("Tehran", "Tehran", "Mirdamad"))
         };
 
-        context.Customers.AddRange(customers);
+        context.Customers.AddRange(Customers);
 
         context.SaveChanges();
     }
