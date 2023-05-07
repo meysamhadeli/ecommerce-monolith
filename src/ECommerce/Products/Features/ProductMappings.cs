@@ -6,7 +6,6 @@ using CreatingProduct;
 using Dtos;
 using GettingAllProductsByPage;
 using Models;
-using ValueObjects;
 
 public class ProductMappings : Profile
 {

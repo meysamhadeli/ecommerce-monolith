@@ -1,10 +1,9 @@
-﻿namespace BuildingBlocks.Core;
+﻿namespace BuildingBlocks.Core.Pagination;
 
-using Pagination;
 using Sieve.Models;
 using Sieve.Services;
 
-public static class QueryableExtensions
+public static class Extensions
 {
     public static async Task<IPageList<TEntity>> ApplyPagingAsync<TEntity>(
         this IQueryable<TEntity> queryable,

@@ -11,6 +11,6 @@ public sealed class FakeAddProductToInventoryCommand : AutoFaker<AddProductToInv
         RuleFor(r => r.Id, _ => NewId.NextGuid());
         RuleFor(r => r.InventoryId, r => new Guid("3c5c0000-97c6-fc34-fc3c-08db322230c4"));
         RuleFor(r => r.ProductId, r => new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c1"));
-        RuleFor(r => r.Quantity, _ => 5);
+        RuleFor(r => r.Quantity, _ => 10);
     }
 }

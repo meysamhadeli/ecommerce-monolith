@@ -2,7 +2,6 @@
 
 using BuildingBlocks.TestBase;
 using ECommerce.Data;
-using ECommerce.Inventories.Models;
 using ECommerce.Inventories.ValueObjects;
 using Fakes;
 using FluentAssertions;
@@ -25,7 +24,8 @@ public class CreateInventoryTests : ECommerceIntegrationTestBase
         await Fixture.InsertAsync(inventoryEntity);
 
         // Assert
-        var result = await Fixture.FindAsync<Inventory, InventoryId>(inventoryEntity.Id);
+        var result = await Fixture.ExecuteDbContextAsync(db =>
+            db.Inventories.FindAsync(InventoryId.Of(inventoryEntity.Id)));
 
         result.Should().NotBeNull();
         result?.Id.Value.Should().Be(inventoryEntity.Id.Value);

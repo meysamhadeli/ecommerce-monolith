@@ -1,8 +1,6 @@
 ﻿namespace ECommerce.Categories.Features.GettingAllCategoriesByPage;
 
 using AutoMapper;
-using BuildingBlocks.Core;
-using BuildingBlocks.Core.Pagination;
 using BuildingBlocks.Web;
 using Data;
 using Dtos;
@@ -13,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 using Ardalis.GuardClauses;
+using BuildingBlocks.Core.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 public record GetCategoriesByPage

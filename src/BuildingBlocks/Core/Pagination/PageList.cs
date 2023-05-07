@@ -1,7 +1,5 @@
 ﻿namespace BuildingBlocks.Core.Pagination;
 
-using AutoMapper;
-
 public record PageList<T>(IReadOnlyList<T> Items, int PageNumber, int PageSize, int TotalCount) : IPageList<T>
     where T : class
 {

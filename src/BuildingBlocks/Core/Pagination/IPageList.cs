@@ -1,7 +1,5 @@
 ﻿namespace BuildingBlocks.Core.Pagination;
 
-using AutoMapper;
-
 public interface IPageList<T>
     where T : class
 {

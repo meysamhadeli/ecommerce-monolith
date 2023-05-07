@@ -3,10 +3,10 @@
 using BuildingBlocks.TestBase;
 using ECommerce.Data;
 using ECommerce.Inventories.Enums;
-using ECommerce.Inventories.Models;
 using ECommerce.Products.ValueObjects;
 using Fakes;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 public class DamageProductTests : ECommerceIntegrationTestBase
@@ -26,8 +26,9 @@ public class DamageProductTests : ECommerceIntegrationTestBase
         await Fixture.SendAsync(command);
 
         // Assert
-        var result = (await Fixture.GetAllAsync<InventoryItems>())?
-            .Where(x => x.ProductId == ProductId.Of(command.ProductId) && x.Status == ProductStatus.Damaged);
+        var result = await Fixture.ExecuteDbContextAsync(db =>
+            db.InventoryItems.Where(x =>
+                x.ProductId == ProductId.Of(command.ProductId) && x.Status == ProductStatus.Damaged).ToListAsync());
 
         result.Should().NotBeNull();
         result.Select(x => x.Quantity.Value.Should().BeGreaterOrEqualTo(5));

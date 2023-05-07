@@ -2,9 +2,6 @@
 
 namespace BuildingBlocks.Core.Model;
 
-public abstract record Aggregate : Aggregate<long>;
-public abstract record Entity : Entity<long>;
-
 public abstract record Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
     private readonly List<IDomainEvent> _domainEvents = new();
