@@ -45,17 +45,19 @@ public record Order : Aggregate<OrderId>
 
     public void AddItems(IEnumerable<OrderItem> items)
     {
-        if (items is not null && items.Any())
+        if (items is null || !items.Any())
         {
-            _orderItems.AddRange(items);
-
-            var itemsDto = items?.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity))
-                .ToList();
-
-            var @event = new OrderItemsAddedToOrderDomainEvent(itemsDto);
-
-            this.AddDomainEvent(@event);
+            throw new InvalidOrderQuantityException();
         }
+
+        _orderItems.AddRange(items);
+
+        var itemsDto = items?.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity))
+            .ToList();
+
+        var @event = new OrderItemsAddedToOrderDomainEvent(itemsDto);
+
+        this.AddDomainEvent(@event);
     }
 
     public void ApplyDiscount(DiscountType discountType, decimal discountValue)
@@ -73,7 +75,8 @@ public record Order : Aggregate<OrderId>
         }
     }
 
-    public (IEnumerable<OrderItemDto> ExpressShipmentItems, IEnumerable<OrderItemDto> RegularShipmentItems) ApplyShipment()
+    public (IEnumerable<OrderItemDto> ExpressShipmentItems, IEnumerable<OrderItemDto> RegularShipmentItems)
+        ApplyShipment()
     {
         var regularItems = new List<OrderItem>();
         var expressItems = new List<OrderItem>();
@@ -98,11 +101,6 @@ public record Order : Aggregate<OrderId>
             {
                 TotalPrice.Value += shipmentExpressPostStrategy.GetShipmentPriceُ();
             }
-        }
-
-        if (!regularItems.Any() && !expressItems.Any())
-        {
-            throw new InvalidOrderQuantityException();
         }
 
         var regularItemsDto = regularItems?.Select(x => new OrderItemDto(x.Id, x.ProductId, x.OrderId, x.Quantity))
