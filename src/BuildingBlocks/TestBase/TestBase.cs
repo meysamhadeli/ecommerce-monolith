@@ -310,6 +310,18 @@ public class TestWriteFixture<TEntryPoint, TWContext> : TestFixture<TEntryPoint>
             return db.SaveChangesAsync();
         });
     }
+
+    public Task<T> FindAsync<T, TKey>(TKey id)
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync(db => db.Set<T>().FindAsync(id).AsTask());
+    }
+
+    public Task<T> FirstOrDefaultAsync<T>()
+        where T : class, IEntity
+    {
+        return ExecuteDbContextAsync(db => db.Set<T>().FirstOrDefaultAsync());
+    }
 }
 
 public class TestFixture<TEntryPoint, TWContext> : TestWriteFixture<TEntryPoint, TWContext>
