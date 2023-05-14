@@ -7,7 +7,7 @@ public record Description
     private const int MaxLength = 200;
     private const int MinLength = 5;
 
-    public string Value { get; set; }
+    public string Value { get; }
 
     public override string ToString()
     {

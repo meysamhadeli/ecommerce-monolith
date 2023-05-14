@@ -14,7 +14,7 @@ public record Address
         return Value;
     }
 
-    public string Value { get; set; }
+    public string Value { get; }
 
     private Address(string street, string city, string state)
     {

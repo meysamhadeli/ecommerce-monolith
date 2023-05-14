@@ -4,7 +4,7 @@ using Exceptions;
 
 public record CategoryId
 {
-    public Guid Value { get; set; }
+    public Guid Value { get; }
 
     private CategoryId(Guid value)
     {

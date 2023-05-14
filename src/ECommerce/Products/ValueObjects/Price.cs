@@ -4,7 +4,7 @@ using Exceptions;
 
 public record Price
 {
-    public decimal Value { get; set; }
+    public decimal Value { get; }
 
     private Price(decimal value)
     {

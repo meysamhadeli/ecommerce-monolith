@@ -4,7 +4,7 @@ using Exceptions;
 
 public record InventoryId
 {
-    public Guid Value { get; set; }
+    public Guid Value { get; }
 
     private InventoryId(Guid value)
     {

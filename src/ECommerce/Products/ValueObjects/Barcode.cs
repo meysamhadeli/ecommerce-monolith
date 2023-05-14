@@ -5,7 +5,7 @@ using Exceptions;
 public record Barcode
 {
     private const int MaxLength = 20;
-    public string Value { get; set; }
+    public string Value { get; }
 
     public override string ToString()
     {

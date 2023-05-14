@@ -5,7 +5,7 @@ using Products.Exceptions;
 
 public record InventoryItemsId
 {
-    public Guid Value { get; set; }
+    public Guid Value { get; }
 
     private InventoryItemsId(Guid value)
     {

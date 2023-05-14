@@ -4,7 +4,7 @@ using Exceptions;
 
 public record TotalPrice
 {
-    public decimal Value { get; set; }
+    public decimal Value { get;}
 
     private TotalPrice(decimal value)
     {
@@ -20,5 +20,17 @@ public record TotalPrice
     }
 
     public static implicit operator decimal(TotalPrice totalPrice) => totalPrice?.Value ?? 0;
+
+    public static TotalPrice operator +(TotalPrice price1, TotalPrice price2)
+    {
+        var sum = price1.Value + price2.Value;
+        return new TotalPrice(sum);
+    }
+
+    public static TotalPrice operator -(TotalPrice price1, TotalPrice price2)
+    {
+        var subtract = price1.Value - price2.Value;
+        return new TotalPrice(subtract);
+    }
 }
 

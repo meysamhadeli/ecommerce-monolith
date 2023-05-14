@@ -66,7 +66,7 @@ public record Order : Aggregate<OrderId>
 
         if (discountStrategy != null)
         {
-            TotalPrice.Value -= discountStrategy.ApplyDiscount(TotalPrice.Value);
+            TotalPrice -= TotalPrice.Of(discountStrategy.ApplyDiscount(TotalPrice.Value));
 
             var @event = new OrderDiscountAppliedDomainEvent(this.Id, this.CustomerId, discountType, discountValue,
                 this.Status, this.IsDeleted);
@@ -88,7 +88,7 @@ public record Order : Aggregate<OrderId>
             regularItems = shipmentRegularPostStrategy.GetOrderItemsToShip(_orderItems);
             if (regularItems.Any())
             {
-                TotalPrice.Value += shipmentRegularPostStrategy.GetShipmentPriceُ();
+                this.TotalPrice += TotalPrice.Of(shipmentRegularPostStrategy.GetShipmentPriceُ());
             }
         }
 
@@ -99,7 +99,7 @@ public record Order : Aggregate<OrderId>
             expressItems = shipmentExpressPostStrategy.GetOrderItemsToShip(_orderItems);
             if (expressItems.Any())
             {
-                TotalPrice.Value += shipmentExpressPostStrategy.GetShipmentPriceُ();
+                TotalPrice += TotalPrice.Of(shipmentExpressPostStrategy.GetShipmentPriceُ());
             }
         }
 
@@ -118,7 +118,7 @@ public record Order : Aggregate<OrderId>
 
     public void CalculateTotalPrice()
     {
-        TotalPrice.Value = _orderItems.Sum(item => item.CalculatePrice());
+        TotalPrice = TotalPrice.Of(_orderItems.Sum(item => item.CalculatePrice()));
 
         if (TotalPrice.Value < 50000)
         {

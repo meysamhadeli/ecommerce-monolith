@@ -4,7 +4,7 @@ using Exceptions;
 
 public record ProfitMargin
 {
-    public decimal Value { get; set; }
+    public decimal Value { get; }
 
     private ProfitMargin(decimal value)
     {

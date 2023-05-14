@@ -1,10 +1,10 @@
 ﻿namespace ECommerce.Orders.ValueObjects;
 
-using ECommerce.Orders.Exceptions;
+using Exceptions;
 
 public record OrderDate
 {
-    public DateTime Value { get; set; }
+    public DateTime Value { get; }
 
     private OrderDate(DateTime value)
     {

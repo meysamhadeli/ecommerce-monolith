@@ -4,7 +4,7 @@ using Exceptions;
 
 public record Quantity
 {
-    public int Value { get; set; }
+    public int Value { get; }
 
     private Quantity(int value)
     {

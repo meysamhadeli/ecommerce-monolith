@@ -5,7 +5,7 @@ using Exceptions;
 
 public record Mobile
 {
-    public string Value { get; set; }
+    public string Value { get; }
 
     public override string ToString()
     {
