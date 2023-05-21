@@ -76,6 +76,14 @@ Run this app in docker using the [docker-compose.yml](./deployments/docker-compo
 docker-compose -f ./deployments/docker-compose/docker-compose.yml up -d
 ```
 
+# Support
+
+If you like my work, feel free to:
+
+- ⭐ this repository. And we will be happy together :)
+
+Thanks a bunch for supporting me!
+
 ## Contribution
 
 Thanks to all [contributors](https://github.com/meysamhadeli/ecommerce-monolith/graphs/contributors), you're awesome and this wouldn't be possible without you! The goal is to build a categorized, community-driven collection of very well-known resources.
