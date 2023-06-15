@@ -8,14 +8,16 @@ public record NetPrice
 
     private NetPrice(decimal value)
     {
-        if (value < 0)
-            throw new InvalidNetPriceException(value);
-
         Value = value;
     }
 
     public static NetPrice Of(decimal value)
     {
+        if (value < 0)
+        {
+            throw new InvalidNetPriceException(value);
+        }
+
         return new NetPrice(value);
     }
 

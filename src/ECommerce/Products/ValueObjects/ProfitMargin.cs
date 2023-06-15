@@ -8,18 +8,18 @@ public record ProfitMargin
 
     private ProfitMargin(decimal value)
     {
-        if (value < 0)
-            throw new InvalidProfitMarginException(value);
-
         Value = value;
     }
 
     public static ProfitMargin Of(decimal value)
     {
+        if (value < 0)
+        {
+            throw new InvalidProfitMarginException(value);
+        }
+
         return new ProfitMargin(value);
     }
 
     public static implicit operator decimal(ProfitMargin profitMargin) => profitMargin.Value;
 }
-
-

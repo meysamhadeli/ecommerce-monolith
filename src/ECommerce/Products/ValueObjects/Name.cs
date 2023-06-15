@@ -16,20 +16,26 @@ public record Name
 
     private Name(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidNullOrEmptyNameException(value);
-
-        if (value.Length < MinLength)
-            throw new ShortLengthNameException(value, MinLength);
-
-        if (value.Length > MaxLength)
-            throw new LongLengthNameException(value, MaxLength);
-
         Value = value;
     }
 
     public static Name Of(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidNullOrEmptyNameException(value);
+        }
+
+        if (value.Length < MinLength)
+        {
+            throw new ShortLengthNameException(value, MinLength);
+        }
+
+        if (value.Length > MaxLength)
+        {
+            throw new LongLengthNameException(value, MaxLength);
+        }
+
         return new Name(value);
     }
     public static implicit operator string(Name name) => name.Value;

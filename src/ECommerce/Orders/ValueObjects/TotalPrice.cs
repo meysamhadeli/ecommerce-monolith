@@ -4,18 +4,20 @@ using Exceptions;
 
 public record TotalPrice
 {
-    public decimal Value { get;}
+    public decimal Value { get; }
 
     private TotalPrice(decimal value)
     {
-        if (value < 0)
-            throw new InvalidTotalPriceException(value);
-
         Value = value;
     }
 
     public static TotalPrice Of(decimal value)
     {
+        if (value < 0)
+        {
+            throw new InvalidTotalPriceException(value);
+        }
+
         return new TotalPrice(value);
     }
 
@@ -33,4 +35,3 @@ public record TotalPrice
         return new TotalPrice(subtract);
     }
 }
-

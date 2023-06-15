@@ -9,14 +9,16 @@ public record InventoryItemsId
 
     private InventoryItemsId(Guid value)
     {
-        if (value == Guid.Empty)
-            throw new InvalidInventoryItemsIdExceptions(value);
-
         Value = value;
     }
 
     public static InventoryItemsId Of(Guid value)
     {
+        if (value == Guid.Empty)
+        {
+            throw new InvalidInventoryItemsIdExceptions(value);
+        }
+
         return new InventoryItemsId(value);
     }
 

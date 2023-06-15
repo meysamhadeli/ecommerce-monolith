@@ -8,16 +8,16 @@ public record OrderDate
 
     private OrderDate(DateTime value)
     {
-        if (value.Hour < 8 && value.Hour > 19)
-        {
-            throw new InvalidDateTimeRangeException();
-        }
-
         Value = value;
     }
 
     public static OrderDate Of(DateTime value)
     {
+        if (value.Hour < 8 && value.Hour > 19)
+        {
+            throw new InvalidDateTimeRangeException();
+        }
+
         return new OrderDate(value);
     }
     public static implicit operator DateTime(OrderDate orderDate) => orderDate.Value;

@@ -14,17 +14,21 @@ public record Barcode
 
     private Barcode(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidBarcodeException(value);
-
-        if (value.Length > MaxLength)
-            throw new LongLengthBarcodeException(value, MaxLength);
-
         Value = value;
     }
 
     public static Barcode Of(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidBarcodeException(value);
+        }
+
+        if (value.Length > MaxLength)
+        {
+            throw new LongLengthBarcodeException(value, MaxLength);
+        }
+
         return new Barcode(value);
     }
 

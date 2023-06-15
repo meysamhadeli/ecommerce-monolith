@@ -8,14 +8,16 @@ public record CustomerId
 
     private CustomerId(Guid value)
     {
-        if (value == Guid.Empty)
-            throw new InvalidCustomerIdExceptions(value);
-
         Value = value;
     }
 
     public static CustomerId Of(Guid value)
     {
+        if (value == Guid.Empty)
+        {
+            throw new InvalidCustomerIdExceptions(value);
+        }
+
         return new CustomerId(value);
     }
 

@@ -8,14 +8,16 @@ public record CategoryId
 
     private CategoryId(Guid value)
     {
-        if (value == Guid.Empty)
-            throw new InvalidCategoryIdExceptions(value);
-
         Value = value;
     }
 
     public static CategoryId Of(Guid value)
     {
+        if (value == Guid.Empty)
+        {
+            throw new InvalidCategoryIdExceptions(value);
+        }
+
         return new CategoryId(value);
     }
 

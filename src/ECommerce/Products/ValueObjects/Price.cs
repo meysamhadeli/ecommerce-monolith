@@ -8,14 +8,16 @@ public record Price
 
     private Price(decimal value)
     {
-        if (value <= 0)
-            throw new InvalidPriceException(value);
-
         Value = value;
     }
 
     public static Price Of(decimal value)
     {
+        if (value <= 0)
+        {
+            throw new InvalidPriceException(value);
+        }
+
         return new Price(value);
     }
 

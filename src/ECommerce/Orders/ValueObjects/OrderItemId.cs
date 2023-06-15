@@ -8,14 +8,16 @@ public record OrderItemId
 
     private OrderItemId(Guid value)
     {
-        if (value == Guid.Empty)
-            throw new InvalidOrderItemIdExceptions(value);
-
         Value = value;
     }
 
     public static OrderItemId Of(Guid value)
     {
+        if (value == Guid.Empty)
+        {
+            throw new InvalidOrderItemIdExceptions(value);
+        }
+
         return new OrderItemId(value);
     }
 

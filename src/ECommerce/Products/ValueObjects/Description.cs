@@ -16,20 +16,26 @@ public record Description
 
     private Description(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new InvalidateNullOrEmptyDescriptionException(value);
-
-        if (value.Length < MinLength)
-            throw new ShortLengthDescriptionException(value, MinLength);
-
-        if (value.Length > MaxLength)
-            throw new LongLengthDescriptionException(value, MaxLength);
-
         Value = value;
     }
 
     public static Description Of(string value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            throw new InvalidateNullOrEmptyDescriptionException(value);
+        }
+
+        if (value.Length < MinLength)
+        {
+            throw new ShortLengthDescriptionException(value, MinLength);
+        }
+
+        if (value.Length > MaxLength)
+        {
+            throw new LongLengthDescriptionException(value, MaxLength);
+        }
+
         return new Description(value);
     }
 

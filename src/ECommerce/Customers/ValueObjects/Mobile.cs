@@ -14,17 +14,17 @@ public record Mobile
 
     private Mobile(string value)
     {
-        // Basic validation rule: phone number must be a 10-digit number
-        if (Regex.IsMatch(value, @"^\d{10}$"))
-        {
-            throw new InvalidMobileException(value);
-        }
-
         Value = value;
     }
 
     public static Mobile Of(string number)
     {
+        // Basic validation rule: phone number must be a 10-digit number
+        if (Regex.IsMatch(number, @"^\d{10}$"))
+        {
+            throw new InvalidMobileException(number);
+        }
+
         return new Mobile(number);
     }
 
