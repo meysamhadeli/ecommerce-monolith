@@ -1,7 +1,9 @@
 # 🛒 ECommerce-Monolith
 <a href="https://github.com/meysamhadeli/ecommerce-monolith/actions/workflows/ci.yml"><img alt="ci-status" src="https://github.com/meysamhadeli/ecommerce-monolith/actions/workflows/ci.yml/badge.svg?branch=main&style=flat-square"/></a>
            
-> **The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and DDD in .Net. The primary focus of this project is not centered on business concerns.** 🚀
+> **The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and DDD in .Net.** 🚀
+
+> 💡 **This project is not business-oriented and most of my focus was in the thechnical part for implement a Monolith system with a sample project.**
 
 <a href="https://gitpod.io/#https://github.com/meysamhadeli/ecommerce-monolith"><img alt="Open in Gitpod" src="https://gitpod.io/button/open-in-gitpod.svg"/></a>
 
