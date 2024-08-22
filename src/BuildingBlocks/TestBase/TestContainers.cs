@@ -1,39 +1,42 @@
 ﻿namespace BuildingBlocks.TestBase;
 
-using Testcontainers.MsSql;
+using Testcontainers.PostgreSql;
 using Web;
 
 public static class TestContainers
 {
-    public static MsSqlContainerOptions MsSqlContainerConfiguration { get;}
+    public static PostgresContainerOptions PostgresContainerConfiguration { get; }
 
     static TestContainers()
     {
         var configuration = ConfigurationHelper.GetConfiguration();
 
-        MsSqlContainerConfiguration = configuration.GetOptions<MsSqlContainerOptions>(nameof(MsSqlContainerOptions));
+        PostgresContainerConfiguration =
+            configuration.GetOptions<PostgresContainerOptions>(nameof(PostgresContainerOptions));
     }
 
-    public static MsSqlContainer MsSqlTestContainer()
+    public static PostgreSqlContainer PostgresTestContainer()
     {
-        var baseBuilder = new MsSqlBuilder()
-            .WithPassword(MsSqlContainerConfiguration.Password)
+        var baseBuilder = new PostgreSqlBuilder()
+            .WithUsername(PostgresContainerConfiguration.UserName)
+            .WithPassword(PostgresContainerConfiguration.Password)
             .WithLabel("Key", "Value");
 
         var builder = baseBuilder
-            .WithImage(MsSqlContainerConfiguration.ImageName)
-            .WithName(MsSqlContainerConfiguration.Name)
-            .WithPortBinding(MsSqlContainerConfiguration.Port, true)
+            .WithImage(PostgresContainerConfiguration.ImageName)
+            .WithName(PostgresContainerConfiguration.Name)
+            .WithCommand(new string[2] { "-c", "max_prepared_transactions=10" })
+            .WithPortBinding(PostgresContainerConfiguration.Port, true)
             .Build();
 
         return builder;
     }
 
-    public sealed class MsSqlContainerOptions
+    public sealed class PostgresContainerOptions
     {
-        public string Name { get; set; } = "msSql_" + Guid.NewGuid().ToString("D");
-        public int Port { get; set; } = 1433;
-        public string ImageName { get; set; } = "mcr.microsoft.com/mssql/server";
+        public string Name { get; set; } = "postgreSql_" + Guid.NewGuid().ToString("D");
+        public int Port { get; set; } = 5432;
+        public string ImageName { get; set; } = "postgres:latest";
         public string UserName { get; set; } = Guid.NewGuid().ToString("D");
         public string Password { get; set; } = Guid.NewGuid().ToString("D");
     }

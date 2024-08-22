@@ -20,9 +20,9 @@ using BuildingBlocks.EFCore;
 
 namespace BuildingBlocks.TestBase;
 
-using System.Globalization;
 using Microsoft.Data.SqlClient;
-using Testcontainers.MsSql;
+using Npgsql;
+using Testcontainers.PostgreSql;
 
 public class TestFixture<TEntryPoint> : IAsyncLifetime
     where TEntryPoint : class
@@ -31,14 +31,13 @@ public class TestFixture<TEntryPoint> : IAsyncLifetime
     private static int Timeout => 120; // Second
     private ITestHarness TestHarness => ServiceProvider?.GetTestHarness();
     private Action<IServiceCollection> TestRegistrationServices { get; set; }
-    private MsSqlContainer MsSqlTestContainer;
+    private PostgreSqlContainer _postgreSqlContainer;
 
     public HttpClient HttpClient => _factory?.CreateClient();
 
     public IServiceProvider ServiceProvider => _factory?.Services;
     public IConfiguration Configuration => _factory?.Services.GetRequiredService<IConfiguration>();
     public ILogger Logger { get; set; }
-
     protected TestFixture()
     {
         _factory = new WebApplicationFactory<TEntryPoint>()
@@ -177,21 +176,21 @@ public class TestFixture<TEntryPoint> : IAsyncLifetime
 
     private async Task StartTestContainerAsync()
     {
-        MsSqlTestContainer = TestContainers.MsSqlTestContainer();
+        _postgreSqlContainer = TestContainers.PostgresTestContainer();
 
-        await MsSqlTestContainer.StartAsync();
+        await _postgreSqlContainer.StartAsync();
     }
 
     private async Task StopTestContainerAsync()
     {
-        await MsSqlTestContainer.StopAsync();
+        await _postgreSqlContainer.StopAsync();
     }
 
     private void AddCustomAppSettings(IConfigurationBuilder configuration)
     {
         configuration.AddInMemoryCollection(new KeyValuePair<string, string>[]
         {
-            new("SqlOptions:ConnectionString", MsSqlTestContainer.GetConnectionString()),
+            new("PostgresOptions:ConnectionString", _postgreSqlContainer.GetConnectionString()),
         });
     }
 
@@ -334,7 +333,7 @@ public class TestFixtureCore<TEntryPoint> : IAsyncLifetime
     where TEntryPoint : class
 {
     private Respawner _reSpawnerDefaultDb;
-    private SqlConnection DefaultDbConnection { get; set; }
+    private NpgsqlConnection _defaultDbConnection;
 
     public TestFixtureCore(TestFixture<TEntryPoint> integrationTestFixture, ITestOutputHelper outputHelper)
     {
@@ -348,35 +347,35 @@ public class TestFixtureCore<TEntryPoint> : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await InitSqlAsync();
+        await InitDatabaseAsync();
     }
 
     public async Task DisposeAsync()
     {
-        await ResetSqlAsync();
+        await ResetDatabaseAsync();
     }
 
-    private async Task InitSqlAsync()
+    private async Task InitDatabaseAsync()
     {
-        var sqlOptions = Fixture.ServiceProvider.GetService<SqlOptions>();
+        var postgresOptions = Fixture.ServiceProvider.GetService<PostgresOptions>();
 
-        if (!string.IsNullOrEmpty(sqlOptions?.ConnectionString))
+        if (!string.IsNullOrEmpty(postgresOptions?.ConnectionString))
         {
-            DefaultDbConnection = new SqlConnection(sqlOptions.ConnectionString);
-            await DefaultDbConnection.OpenAsync();
+            _defaultDbConnection = new NpgsqlConnection(postgresOptions.ConnectionString);
+            await _defaultDbConnection.OpenAsync();
 
-            _reSpawnerDefaultDb = await Respawner.CreateAsync(DefaultDbConnection,
-                new RespawnerOptions { DbAdapter = DbAdapter.SqlServer });
+            _reSpawnerDefaultDb = await Respawner.CreateAsync(_defaultDbConnection,
+                new RespawnerOptions { DbAdapter = DbAdapter.Postgres });
 
             await SeedDataAsync();
         }
     }
 
-    private async Task ResetSqlAsync()
+    private async Task ResetDatabaseAsync()
     {
-        if (DefaultDbConnection is not null)
+        if (_defaultDbConnection is not null)
         {
-            await _reSpawnerDefaultDb.ResetAsync(DefaultDbConnection);
+            await _reSpawnerDefaultDb.ResetAsync(_defaultDbConnection);
         }
     }
 

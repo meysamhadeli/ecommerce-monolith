@@ -20,15 +20,17 @@ public static class Extensions
         this IServiceCollection services)
         where TContext : DbContext, IDbContext
     {
-        services.AddValidateOptions<SqlOptions>();
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+        services.AddValidateOptions<PostgresOptions>();
 
         services.AddDbContext<TContext>((sp, options) =>
         {
-            var postgresOptions = sp.GetRequiredService<SqlOptions>();
+            var postgresOptions = sp.GetRequiredService<PostgresOptions>();
 
             Guard.Against.Null(options, nameof(postgresOptions));
 
-            options.UseSqlServer(postgresOptions?.ConnectionString,
+            options.UseNpgsql(postgresOptions?.ConnectionString,
                     dbOptions =>
                     {
                         dbOptions.MigrationsAssembly(typeof(TContext).Assembly.GetName().Name);
