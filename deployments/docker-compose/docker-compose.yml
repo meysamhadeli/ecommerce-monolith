@@ -1,17 +1,24 @@
 version: "3.3"
 services:
 
-  ######################################################
-  # SqlServer
-  ######################################################
-  sql:
-    container_name: sql
-    image: mcr.microsoft.com/mssql/server
-    ports:
-      - "1433:1433"
-    environment:
-      SA_PASSWORD: "Password@1234"
-      ACCEPT_EULA: "Y"
+   #######################################################
+   #  Postgres
+   ######################################################
+  postgres:
+   image: postgres:latest
+   container_name: postgres
+   restart: unless-stopped
+   ports:
+     - '5432:5432'
+   environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+   command:
+     - "postgres"
+     - "-c"
+     - "wal_level=logical"
+     - "-c"
+     - "max_prepared_transactions=10"
 
 
   #######################################################

@@ -3,41 +3,44 @@ using System;
 using ECommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace ECommerce.Data.Migrations
+namespace ECommerce.Migrations
 {
     [DbContext(typeof(ECommerceDbContext))]
-    partial class ECommerceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240822130156_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("ECommerce.Categories.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
@@ -54,19 +57,19 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Customers.Models.Customer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
@@ -83,19 +86,19 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Inventories.Models.Inventory", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
@@ -112,33 +115,33 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Inventories.Models.InventoryItems", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<Guid?>("InventoryId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
 
                     b.Property<Guid?>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("InStock");
 
                     b.Property<long>("Version")
@@ -157,22 +160,22 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Orders.Models.Order", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<Guid?>("CustomerId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
@@ -180,7 +183,7 @@ namespace ECommerce.Data.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasDefaultValue("Pending");
 
                     b.Property<long>("Version")
@@ -197,28 +200,28 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Orders.Models.OrderItem", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
 
                     b.Property<Guid?>("OrderId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<long>("Version")
                         .IsConcurrencyToken()
@@ -236,25 +239,25 @@ namespace ECommerce.Data.Migrations
             modelBuilder.Entity("ECommerce.Products.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("CreatedBy")
                         .HasColumnType("bigint");
 
                     b.Property<bool>("IsBreakable")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint");
@@ -275,12 +278,12 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Categories.ValueObjects.Name", "Name", b1 =>
                         {
                             b1.Property<Guid>("CategoryId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
+                                .HasColumnType("character varying(50)")
                                 .HasColumnName("Name");
 
                             b1.HasKey("CategoryId");
@@ -299,11 +302,11 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Customers.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)")
+                                .HasColumnType("text")
                                 .HasColumnName("Address");
 
                             b1.HasKey("CustomerId");
@@ -317,11 +320,11 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Customers.ValueObjects.Mobile", "Mobile", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)")
+                                .HasColumnType("text")
                                 .HasColumnName("Mobile");
 
                             b1.HasKey("CustomerId");
@@ -335,11 +338,11 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Customers.ValueObjects.Name", "Name", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
-                                .HasColumnType("nvarchar(max)")
+                                .HasColumnType("text")
                                 .HasColumnName("Name");
 
                             b1.HasKey("CustomerId");
@@ -362,12 +365,12 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Inventories.ValueObjects.Name", "Name", b1 =>
                         {
                             b1.Property<Guid>("InventoryId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
+                                .HasColumnType("character varying(50)")
                                 .HasColumnName("Name");
 
                             b1.HasKey("InventoryId");
@@ -394,11 +397,11 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Inventories.ValueObjects.Quantity", "Quantity", b1 =>
                         {
                             b1.Property<Guid>("InventoryItemsId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<int>("Value")
                                 .HasMaxLength(20)
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Quantity");
 
                             b1.HasKey("InventoryItemsId");
@@ -425,10 +428,10 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Orders.ValueObjects.OrderDate", "OrderDate", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<DateTime>("Value")
-                                .HasColumnType("datetime2")
+                                .HasColumnType("timestamp with time zone")
                                 .HasColumnName("OrderDate");
 
                             b1.HasKey("OrderId");
@@ -442,7 +445,7 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Orders.ValueObjects.TotalPrice", "TotalPrice", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Value")
                                 .HasColumnType("decimal(18,2)")
@@ -476,10 +479,10 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Orders.ValueObjects.Quantity", "Quantity", b1 =>
                         {
                             b1.Property<Guid>("OrderItemId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<int>("Value")
-                                .HasColumnType("int")
+                                .HasColumnType("integer")
                                 .HasColumnName("Quantity");
 
                             b1.HasKey("OrderItemId");
@@ -506,12 +509,12 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.Barcode", "Barcode", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(20)
-                                .HasColumnType("nvarchar(20)")
+                                .HasColumnType("character varying(20)")
                                 .HasColumnName("Barcode");
 
                             b1.HasKey("ProductId");
@@ -525,12 +528,12 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.Description", "Description", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(200)
-                                .HasColumnType("nvarchar(200)")
+                                .HasColumnType("character varying(200)")
                                 .HasColumnName("Description");
 
                             b1.HasKey("ProductId");
@@ -544,12 +547,12 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.Name", "Name", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
+                                .HasColumnType("character varying(50)")
                                 .HasColumnName("Name");
 
                             b1.HasKey("ProductId");
@@ -563,7 +566,7 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.NetPrice", "NetPrice", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Value")
                                 .HasColumnType("decimal(18,2)")
@@ -580,7 +583,7 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.Price", "Price", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Value")
                                 .HasColumnType("decimal(18,2)")
@@ -597,7 +600,7 @@ namespace ECommerce.Data.Migrations
                     b.OwnsOne("ECommerce.Products.ValueObjects.ProfitMargin", "ProfitMargin", b1 =>
                         {
                             b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
+                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Value")
                                 .HasColumnType("decimal(18,2)")

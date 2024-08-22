@@ -9,8 +9,7 @@
         {
             var builder = new DbContextOptionsBuilder<ECommerceDbContext>();
 
-            builder.UseSqlServer(
-                "Server=.\\sqlexpress;Database=EcommerceDB;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+            builder.UseNpgsql("Server=localhost;Port=5432;Database=ecommerce_db;User Id=postgres;Password=postgres;Include Error Detail=true");
             return new ECommerceDbContext(builder.Options);
         }
     }

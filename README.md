@@ -12,6 +12,8 @@
 - [The Goals of This Project](#the-goals-of-this-project)
 - [Technologies - Libraries](#technologies---libraries)
 - [Structure of Project](#structure-of-project)
+- [Development Setup](#development_setup)
+  - [Dotnet Tool Packages](#dotnet_tool_packages)
 - [How to Run](#how-to-run)
   - [Docker Compose](#docker-compose)
 
@@ -21,7 +23,7 @@
 - :sparkle: Using `Domain Driven Design (DDD)` for implementing `business processes` and `validation rules`.
 - :sparkle: Adopting `CQRS` implementation with the `MediatR` library for better separation of `write` and `read` operations.
 - :sparkle: Implementing `MediatR` to `reduce coupling` and provide support for managing `cross-cutting concerns` within `pipelines`, including `validation` and `transaction handling` for the application.
-- :sparkle: Using `SqlServer` as our `relational database` management system at the database level.
+- :sparkle: Using `Postgres` as our `relational database` management system at the database level.
 - :sparkle: Incorporating `Unit Testing`, `Integration Testing`, and `End To End Testing` for testing level to ensure the `robustness` and `reliability` of the application.
 - :sparkle: Utilizing `Fluent Validation` and a `Validation Pipeline Behaviour` on top of `MediatR` to validate requests and responses and ensure `data integrity`.
 - :sparkle: Using `Minimal API` for all endpoints to create a `lightweight` and `streamlined` API.
@@ -29,7 +31,7 @@
 
 ## Technologies - Libraries
 
-- ✔️ **[`.NET 7`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
+- ✔️ **[`.NET 8`](https://dotnet.microsoft.com/download)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core
 - ✔️ **[`MVC Versioning API`](https://github.com/microsoft/aspnet-api-versioning)** - Set of libraries which add service API versioning to ASP.NET Web API, OData with ASP.NET Web API, and ASP.NET Core
 - ✔️ **[`EF Core`](https://github.com/dotnet/efcore)** - Modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations
 - ✔️ **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET.
@@ -67,6 +69,18 @@ To achieve better separation of concerns and cross-cutting concerns, I used the 
 With `CQRS`, we can `reduce coupling` between layers and tune down specific methods to not follow general conventions. This is achieved by `cutting each business functionality into vertical slices`, where each command/query handler is a separate slice. As a result, each handler can be a `separate code unit`, even copy/pasted, allowing us to customize individual methods as needed. In contrast, in a `traditional layered` architecture, `changing the core generic mechanism` in `one layer` can `impact all methods`, which can be `time-consuming` and `challenging` to `maintain`.
 
 Overall, by using the `REPR` pattern and `CQRS` with the `Mediator` pattern, we can create a `better-structured` and more `maintainable` application, with improved `separation of concerns`.
+
+## Development Setup
+
+### Dotnet Tool Packages
+For installing our requirement package with .NET cli tools, we need to install `dotnet tool manifest`.
+```bash
+dotnet new tool-manifest
+```
+And after that we can restore our dotnet tool packages with .NET cli tools from `.config` folder and `dotnet-tools.json` file.
+```
+dotnet tool restore
+```
 
 ## How to Run
 
