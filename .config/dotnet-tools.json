@@ -8,6 +8,13 @@
         "dotnet-outdated"
       ],
       "rollForward": false
+    },
+    "dotnet-ef": {
+      "version": "8.0.8",
+      "commands": [
+        "dotnet-ef"
+      ],
+      "rollForward": false
     }
   }
 }

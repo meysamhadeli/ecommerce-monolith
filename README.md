@@ -12,8 +12,8 @@
 - [The Goals of This Project](#the-goals-of-this-project)
 - [Technologies - Libraries](#technologies---libraries)
 - [Structure of Project](#structure-of-project)
-- [Development Setup](#development_setup)
-  - [Dotnet Tool Packages](#dotnet_tool_packages)
+- [Development Setup](#development-setup)
+  - [Dotnet Tools Packages](#dotnet-tools-packages)
 - [How to Run](#how-to-run)
   - [Docker Compose](#docker-compose)
 
@@ -72,12 +72,12 @@ Overall, by using the `REPR` pattern and `CQRS` with the `Mediator` pattern, we 
 
 ## Development Setup
 
-### Dotnet Tool Packages
+### Dotnet Tools Packages
 For installing our requirement package with .NET cli tools, we need to install `dotnet tool manifest`.
 ```bash
 dotnet new tool-manifest
 ```
-And after that we can restore our dotnet tool packages with .NET cli tools from `.config` folder and `dotnet-tools.json` file.
+And after that we can restore our dotnet tools packages with .NET cli tools from `.config` folder and `dotnet-tools.json` file.
 ```
 dotnet tool restore
 ```
