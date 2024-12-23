@@ -1,15 +1,14 @@
-using BuildingBlocks.Swagger;
+using BuildingBlocks.OpenApi;
 using BuildingBlocks.Web;
 using ECommerce;
 using ECommerce.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddCustomSwagger(configuration, typeof(EcommerceRoot).Assembly);
-builder.Services.AddCustomVersioning();
 builder.AddMinimalEndpoints(assemblies: typeof(EcommerceRoot).Assembly);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCustomVersioning();
+builder.Services.AddAspnetOpenApi();
 builder.AddInfrastructure();
 
 var app = builder.Build();
@@ -19,7 +18,7 @@ app.UseInfrastructure();
 
 if (!app.Environment.IsProduction())
 {
-    app.UseCustomSwagger();
+    app.UseAspnetOpenApi();
 }
 
 app.Run();

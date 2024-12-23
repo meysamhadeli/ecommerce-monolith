@@ -47,7 +47,7 @@ public static class InfrastructureExtensions
             options.EnrichDiagnosticContext = LogEnrichHelper.EnrichFromRequest;
         });
 
-        app.UseMigration<ECommerceDbContext>(env);
+        app.UseMigration<ECommerceDbContext>();
 
         app.MapGet("/", x => x.Response.WriteAsync(appOptions.Name));
 
