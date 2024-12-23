@@ -4,9 +4,11 @@ using BuildingBlocks.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.EFCore;
 
@@ -37,22 +39,24 @@ public static class Extensions
                         //ref: https://learn.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency
                         dbOptions.EnableRetryOnFailure(3, TimeSpan.FromSeconds(1), null);
                     });
+
+            // Suppress warnings for pending model changes
+            options.ConfigureWarnings(
+                w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
         });
 
+        services.AddScoped<ISeedManager, SeedManager>();
         services.AddScoped<IDbContext>(provider => provider.GetService<TContext>());
 
         return services;
     }
 
-    public static IApplicationBuilder UseMigration<TContext>(this IApplicationBuilder app, IWebHostEnvironment env)
-        where TContext : DbContext, IDbContext
+    public static IApplicationBuilder UseMigration<TContext>(this IApplicationBuilder app)
+    where TContext : DbContext, IDbContext
     {
-        MigrateDatabaseAsync<TContext>(app.ApplicationServices).GetAwaiter().GetResult();
+        MigrateAsync<TContext>(app.ApplicationServices).GetAwaiter().GetResult();
 
-        if (!env.IsEnvironment("test"))
-        {
-            SeedDataAsync(app.ApplicationServices).GetAwaiter().GetResult();
-        }
+        SeedAsync(app.ApplicationServices).GetAwaiter().GetResult();
 
         return app;
     }
@@ -106,22 +110,30 @@ public static class Extensions
         }
     }
 
-    private static async Task MigrateDatabaseAsync<TContext>(IServiceProvider serviceProvider)
-        where TContext : DbContext, IDbContext
+    private static async Task MigrateAsync<TContext>(IServiceProvider serviceProvider)
+    where TContext : DbContext, IDbContext
     {
-        using var scope = serviceProvider.CreateScope();
-
+        await using var scope = serviceProvider.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<TContext>();
-        await context.Database.MigrateAsync();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<TContext>>();
+
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+
+        if (pendingMigrations.Any())
+        {
+            logger.LogInformation("Applying {Count} pending migrations...", pendingMigrations.Count());
+
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+        }
     }
 
-    private static async Task SeedDataAsync(IServiceProvider serviceProvider)
+    private static async Task SeedAsync(IServiceProvider serviceProvider)
     {
-        using var scope = serviceProvider.CreateScope();
-        var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
-        foreach (var seeder in seeders)
-        {
-            await seeder.SeedAllAsync();
-        }
+        await using var scope = serviceProvider.CreateAsyncScope();
+
+        var seedersManager = scope.ServiceProvider.GetRequiredService<ISeedManager>();
+
+        await seedersManager.ExecuteSeedAsync();
     }
 }

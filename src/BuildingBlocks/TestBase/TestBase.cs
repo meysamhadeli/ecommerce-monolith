@@ -50,6 +50,13 @@ public class TestFixture<TEntryPoint> : IAsyncLifetime
                 {
                     TestRegistrationServices?.Invoke(services);
                     services.ReplaceSingleton(AddHttpContextAccessorMock);
+
+                    // Register all ITestDataSeeder implementations dynamically
+                    services.Scan(scan => scan
+                                      .FromApplicationDependencies() // Scan the current app and its dependencies
+                                      .AddClasses(classes => classes.AssignableTo<ITestDataSeeder>()) // Find classes that implement ITestDataSeeder
+                                      .AsImplementedInterfaces()
+                                      .WithScopedLifetime());
                 });
             });
     }
@@ -387,11 +394,8 @@ public class TestFixtureCore<TEntryPoint> : IAsyncLifetime
     {
         using var scope = Fixture.ServiceProvider.CreateScope();
 
-        var seeders = scope.ServiceProvider.GetServices<IDataSeeder>();
-        foreach (var seeder in seeders)
-        {
-            await seeder.SeedAllAsync();
-        }
+        var seedManager = scope.ServiceProvider.GetService<ISeedManager>();
+        await seedManager.ExecuteTestSeedAsync();
     }
 }
 
