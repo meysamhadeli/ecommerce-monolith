@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Inventories.Features.GettingAllInventoryItemsByPage;
 
 using AutoMapper;
-using BuildingBlocks.Web;
+using Griffin.Web;
 using Data;
 using Dtos;
 using FluentValidation;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Pagination;
+using Griffin.Core.Pagination;
 using Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -71,7 +71,6 @@ public class GetAllInventoryItemsEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Inventory").Build())
             .Produces<GetAllInventoryItemsByPageResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;

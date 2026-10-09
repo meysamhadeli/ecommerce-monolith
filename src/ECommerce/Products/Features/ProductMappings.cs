@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Products.Features;
 
 using AutoMapper;
-using BuildingBlocks.Core.Pagination;
+using Griffin.Core.Pagination;
 using CreatingProduct;
 using Dtos;
 using GettingAllProductsByPage;

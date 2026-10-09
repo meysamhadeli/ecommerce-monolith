@@ -1,6 +1,6 @@
 ﻿namespace EndToEnd.Test;
 
-using BuildingBlocks.TestBase;
+using ECommerce.TestBase;
 using ECommerce.Data;
 using Xunit;
 

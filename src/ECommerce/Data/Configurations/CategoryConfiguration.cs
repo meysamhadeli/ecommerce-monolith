@@ -1,5 +1,3 @@
-﻿using CategoryId = ECommerce.Categories.ValueObjects.CategoryId;
-
 namespace ECommerce.Data.Configurations;
 
 using Categories.Models;
@@ -13,20 +11,10 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.ToTable(nameof(Category));
 
         builder.HasKey(r => r.Id);
-        builder.Property(r => r.Id).ValueGeneratedNever()
-            .HasConversion<Guid>(categoryId => categoryId.Value, dbId => CategoryId.Of(dbId));
+        builder.Property(r => r.Id).ValueGeneratedNever();
 
-        builder.Property(r => r.Version).IsConcurrencyToken();
-
-        builder.OwnsOne(
-            x => x.Name,
-            a =>
-            {
-                a.Property(p => p.Value)
-                    .HasColumnName(nameof(Category.Name))
-                    .HasMaxLength(50)
-                    .IsRequired();
-            }
-        );
+        builder.Property(r => r.Name)
+            .HasMaxLength(50)
+            .IsRequired();
     }
 }

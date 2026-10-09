@@ -1,23 +1,19 @@
-﻿namespace ECommerce.Products.Features.CreatingProduct;
+namespace ECommerce.Products.Features.CreatingProduct;
 
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Core.CQRS;
-using BuildingBlocks.Core.Event;
-using BuildingBlocks.Web;
-using ECommerce.Categories.ValueObjects;
-using ECommerce.Data;
-using ECommerce.Products.Exceptions;
-using ECommerce.Products.Models;
-using ECommerce.Products.ValueObjects;
+using Data;
+using Exceptions;
 using FluentValidation;
+using Griffin.Core.CQRS;
+using Griffin.Core.Event;
+using Griffin.Web;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Name = ValueObjects.Name;
 
 public record CreateProduct(string Name, string Barcode, bool Weighted,
     Guid CategoryId, decimal Price, decimal ProfitMargin, string Description) : ICommand<CreateProductResult>
@@ -26,10 +22,6 @@ public record CreateProduct(string Name, string Barcode, bool Weighted,
 }
 
 public record CreateProductResult(Guid Id);
-
-public record ProductCreatedDomainEvent(Guid Id, string Name, string Barcode, bool Weighted, Guid CategoryId,
-    decimal Price, decimal ProfitMargin, decimal NetPrice,
-    string Description, bool IsDeleted) : IDomainEvent;
 
 public record CreateProductRequestDto(string Name, string Barcode, bool Weighted,
     Guid CategoryId, decimal Price, decimal ProfitMargin, string Description);
@@ -58,7 +50,6 @@ public class CreateProductEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Catalog").Build())
             .Produces<CreateProductResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;
@@ -91,21 +82,29 @@ public class CreateProductHandler : ICommandHandler<CreateProduct, CreateProduct
     {
         Guard.Against.Null(request, nameof(request));
 
-        var product = await _eCommerceDbContext.Products.SingleOrDefaultAsync(x => x.Id == ProductId.Of(request.Id),
-            cancellationToken);
+        var productExists = await _eCommerceDbContext.Products
+            .AnyAsync(x => x.Id == request.Id, cancellationToken);
 
-        if (product is not null)
+        if (productExists)
         {
             throw new ProductAlreadyExistException();
         }
 
-        var productEntity = Product.Create(ProductId.Of(request.Id), Name.Of(request.Name),
-            Barcode.Of(request.Barcode), request.Weighted, CategoryId.Of(request.CategoryId), Price.Of(request.Price),
-            ProfitMargin.Of(request.ProfitMargin)
-            , Description.Of(request.Description));
+        var product = new Models.Product
+        {
+            Id = request.Id,
+            Name = request.Name,
+            Barcode = request.Barcode,
+            Description = request.Description,
+            IsBreakable = request.Weighted,
+            CategoryId = request.CategoryId,
+            Price = request.Price,
+            ProfitMargin = request.ProfitMargin,
+            NetPrice = request.Price + request.ProfitMargin
+        };
 
-        var newProduct = (await _eCommerceDbContext.Products.AddAsync(productEntity, cancellationToken)).Entity;
+        await _eCommerceDbContext.Products.AddAsync(product, cancellationToken);
 
-        return new CreateProductResult(newProduct.Id.Value);
+        return new CreateProductResult(product.Id);
     }
 }

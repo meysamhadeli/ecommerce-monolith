@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Categories.Features;
 
 using AutoMapper;
-using BuildingBlocks.Core.Pagination;
+using Griffin.Core.Pagination;
 using CreatingCategory;
 using Dtos;
 using GettingAllCategoriesByPage;

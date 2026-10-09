@@ -2,7 +2,7 @@
 
 using System.Net;
 using System.Net.Http.Json;
-using BuildingBlocks.TestBase;
+using ECommerce.TestBase;
 using ECommerce.Data;
 using EndToEnd.Test.Fakes;
 using EndToEnd.Test.Routes;

@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Inventories.Exceptions;
 
-using BuildingBlocks.Exception;
+using Griffin.Core.Exception;
 
 public class InvalidStatusInStockException : BadRequestException
 {

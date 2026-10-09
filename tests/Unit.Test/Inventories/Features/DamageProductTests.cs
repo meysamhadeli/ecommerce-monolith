@@ -1,49 +1,35 @@
-﻿namespace Unit.Test.Inventories.Features;
+namespace Unit.Test.Inventories.Features;
 
 using ECommerce.Inventories.Enums;
+using ECommerce.Inventories.Exceptions;
 using ECommerce.Inventories.Features.DamagingProduct;
-using ECommerce.Products.ValueObjects;
 using FluentAssertions;
-using FluentValidation.TestHelper;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Unit.Test.Common;
 using Unit.Test.Fakes;
 using Xunit;
 
-[Collection(nameof(UnitTestFixture))]
-public class DamageProductTests
+public class DamageProductTests : IDisposable
 {
     private readonly UnitTestFixture _fixture;
     private readonly DamageProductHandler _handler;
 
-    public Task<Unit> Act(DamageProduct command, CancellationToken cancellationToken) =>
-        _handler.Handle(command, cancellationToken);
-
-    public DamageProductTests(UnitTestFixture fixture)
+    public DamageProductTests()
     {
-        _fixture = fixture;
-        _handler = new DamageProductHandler(fixture.DbContext);
+        _fixture = new UnitTestFixture();
+        _handler = new DamageProductHandler(_fixture.DbContext);
+    }
+
+    public void Dispose() => _fixture.Dispose();
+
+    private async Task Act(DamageProduct command, CancellationToken cancellationToken)
+    {
+        await _handler.Handle(command, cancellationToken);
+        await _fixture.DbContext.SaveChangesAsync(cancellationToken);
     }
 
     [Fact]
-    public void is_valid_should_be_false_when_validation_parameters_is_invalid()
-    {
-        // Arrange
-        var command = new FakeValidateDamageProduct().Generate();
-        var validator = new DamageProductValidator();
-
-        // Act
-        var result = validator.TestValidate(command);
-
-        // Assert
-        result.IsValid.Should().BeFalse();
-        result.ShouldHaveValidationErrorFor(x => x.ProductId);
-        result.ShouldHaveValidationErrorFor(x => x.Quantity);
-    }
-
-    [Fact]
-    public async Task handler_with_valid_command_should_damage_product_and_set_record_quantity_of_damaged()
+    public async Task handler_with_valid_command_should_decrease_quantity_of_in_stock_item()
     {
         // Arrange
         var command = new FakeDamageProductCommand().Generate();
@@ -52,22 +38,47 @@ public class DamageProductTests
         await Act(command, CancellationToken.None);
 
         // Assert
-        var entity = await _fixture.DbContext.InventoryItems.SingleOrDefaultAsync(x =>
-            x.ProductId == ProductId.Of(command.ProductId) && x.Status == ProductStatus.InStock);
+        var entity = await _fixture.DbContext.InventoryItems
+            .SingleOrDefaultAsync(x => x.ProductId == command.ProductId && x.Status == ProductStatus.InStock);
 
-        entity?.Should().NotBeNull();
-        entity?.Quantity.Value.Should().Be(0);
-        entity?.ProductId.Value.Should().Be(new Guid("3c5c0000-97c6-fc34-fcd3-08db322230c2"));
+        entity.Should().NotBeNull();
+        entity?.Quantity.Should().Be(0);
     }
 
     [Fact]
-    public async Task handler_with_null_command_should_throw_argument_exception()
+    public async Task handler_with_product_not_in_inventory_should_throw_product_not_exist_to_inventory_exception()
+    {
+        // Arrange
+        var command = new FakeDamageProductCommand().Generate() with { ProductId = Guid.NewGuid() };
+
+        // Act
+        var act = async () => await Act(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<ProductNotExistToInventoryException>();
+    }
+
+    [Fact]
+    public async Task handler_with_quantity_greater_than_stock_should_throw_out_of_range_quantity_exception()
+    {
+        // Arrange
+        var command = new FakeDamageProductCommand().Generate() with { Quantity = 1000 };
+
+        // Act
+        var act = async () => await Act(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<OutOfRangeQuantityException>();
+    }
+
+    [Fact]
+    public async Task handler_with_null_command_should_throw_argument_null_exception()
     {
         // Arrange
         DamageProduct command = null;
 
         // Act
-        Func<Task> act = async () => { await Act(command, CancellationToken.None); };
+        var act = async () => await Act(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();

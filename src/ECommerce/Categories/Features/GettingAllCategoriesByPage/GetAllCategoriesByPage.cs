@@ -1,7 +1,7 @@
 ﻿namespace ECommerce.Categories.Features.GettingAllCategoriesByPage;
 
 using AutoMapper;
-using BuildingBlocks.Web;
+using Griffin.Web;
 using Data;
 using Dtos;
 using FluentValidation;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Sieve.Services;
 using Ardalis.GuardClauses;
-using BuildingBlocks.Core.Pagination;
+using Griffin.Core.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 public record GetCategoriesByPage
@@ -61,7 +61,6 @@ public class GetCategoriesEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Catalog").Build())
             .Produces<GetCategoriesByPageResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;

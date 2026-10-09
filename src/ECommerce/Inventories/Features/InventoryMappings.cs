@@ -2,7 +2,7 @@
 
 using AddingProductToInventory;
 using AutoMapper;
-using BuildingBlocks.Core.Pagination;
+using Griffin.Core.Pagination;
 using DamagingProduct;
 using Dtos;
 using GettingAllInventoryByPage;

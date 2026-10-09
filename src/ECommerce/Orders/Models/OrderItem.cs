@@ -1,20 +1,18 @@
-﻿namespace ECommerce.Orders.Models;
+namespace ECommerce.Orders.Models;
 
-using BuildingBlocks.Core.Model;
-using ECommerce.Products.Models;
-using ECommerce.Products.ValueObjects;
-using ValueObjects;
+using Products.Models;
 
-public record OrderItem : Entity<OrderItemId>
+public class OrderItem
 {
-    public ProductId ProductId { get; init; }
-    public Product Product { get; init; }
-    public OrderId OrderId { get; init; }
-    public Order Order { get; init; }
-    public Quantity Quantity { get; init; }
+    public Guid Id { get; set; }
 
-    public decimal CalculatePrice()
-    {
-        return Product.NetPrice.Value * Quantity.Value;
-    }
+    public Guid ProductId { get; set; }
+
+    public Product Product { get; set; }
+
+    public Guid OrderId { get; set; }
+
+    public Order Order { get; set; }
+
+    public int Quantity { get; set; }
 }

@@ -1,49 +1,24 @@
-﻿namespace ECommerce.Orders.Features.RegisteringNewOrder;
+namespace ECommerce.Orders.Features.RegisteringNewOrder;
 
+using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Core.CQRS;
-using BuildingBlocks.Core.Event;
-using BuildingBlocks.Web;
 using Data;
 using Dtos;
 using Enums;
+using Exceptions;
 using FluentValidation;
+using Griffin.Core.CQRS;
+using Griffin.Web;
 using Inventories.Enums;
 using Inventories.Features.AddingProductToInventory;
+using Inventories.Models;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using Ardalis.GuardClauses;
-using Customers.ValueObjects;
-using Exceptions;
-using Inventories.Models;
 using Models;
-using Products.ValueObjects;
-using ValueObjects;
-
-public record NewOrderRegisteredDomainEvent
-    (Guid Id, Guid InventoryId, Guid ProductId, int Quantity, OrderStatus Status) : IDomainEvent;
-
-public record OrderInitialedDomainEvent
-(Guid Id, Guid CustomerId, DiscountType DiscountType, decimal DiscountValue,
-    OrderStatus Status = OrderStatus.Pending, bool isDeleted = false) : IDomainEvent;
-
-public record OrderDiscountAppliedDomainEvent
-(Guid Id, Guid CustomerId, DiscountType DiscountType, decimal DiscountValue,
-    OrderStatus Status, bool isDeleted = false) : IDomainEvent;
-
-public record OrderShipmentAppliedDomainEvent
-(Guid Id, Guid CustomerId, IEnumerable<OrderItemDto> RegularOrderItems, IEnumerable<OrderItemDto> ExpressOrderItems,
-    OrderStatus Status, bool isDeleted = false) : IDomainEvent;
-
-public record OrderTotalPriceAddedDomainEvent
-(Guid Id, Guid CustomerId, DateTime OrderDate, decimal TotalPrice,
-    OrderStatus Status, IEnumerable<OrderItemDto> OrderItems, bool isDeleted = false) : IDomainEvent;
-
-public record OrderItemsAddedToOrderDomainEvent (IEnumerable<OrderItemDto> OrderItems) : IDomainEvent;
 
 public record RegisterNewOrder(Guid CustomerId,
     IEnumerable<ItemDto> Items, DiscountType DiscountType, decimal DiscountValue, DateTime? OrderDate = null) : ICommand<RegisterNewOrderResult>
@@ -85,7 +60,6 @@ public class RegisterNewOrderEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Order").Build())
             .Produces<AddProductToInventoryResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;
@@ -102,16 +76,19 @@ public class RegisterNewOrderValidator : AbstractValidator<RegisterNewOrder>
         RuleFor(x => x.DiscountValue).GreaterThanOrEqualTo(0)
             .WithMessage("DiscountValue must be equal or greater than 0");
 
-        RuleFor(x => x.DiscountType).Must(p => (p.GetType().IsEnum &&
-                                                p == DiscountType.None) ||
-                                               p == DiscountType.AmountDiscount ||
-                                               p == DiscountType.PercentageDiscount)
+        RuleFor(x => x.DiscountType).Must(p => p == DiscountType.None ||
+                                              p == DiscountType.AmountDiscount ||
+                                              p == DiscountType.PercentageDiscount)
             .WithMessage("Status must be None, AmountDiscount or PercentageDiscount");
     }
 }
 
 public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, RegisterNewOrderResult>
 {
+    private const decimal RegularPostPrice = 200;
+    private const decimal ExpressPostPrice = 500;
+    private const decimal MinimumTotalPrice = 50000;
+
     private readonly ECommerceDbContext _eCommerceDbContext;
 
     public RegisterNewOrderHandler(ECommerceDbContext eCommerceDbContext)
@@ -124,7 +101,7 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
         Guard.Against.Null(request, nameof(request));
 
         var customer = await _eCommerceDbContext.Customers.FirstOrDefaultAsync(
-            x => x.Id == CustomerId.Of(request.CustomerId),
+            x => x.Id == request.CustomerId,
             cancellationToken: cancellationToken);
 
         if (customer is null)
@@ -132,44 +109,93 @@ public class RegisterNewOrderHandler : ICommandHandler<RegisterNewOrder, Registe
             throw new CustomerNotExistException();
         }
 
-        var inventoryItems = new List<InventoryItems>();
-
-        foreach (var orderItem in request.Items)
+        var order = new Order
         {
-            var existItem =
-                await _eCommerceDbContext.InventoryItems.Include(i => i.Product).FirstOrDefaultAsync(x =>
-                    x.ProductId == ProductId.Of(orderItem.ProductId) && x.Status == ProductStatus.InStock &&
-                    x.Quantity.Value >= orderItem.Quantity, cancellationToken: cancellationToken);
+            Id = request.Id,
+            CustomerId = customer.Id,
+            Customer = customer,
+            Status = OrderStatus.Pending,
+            TotalPrice = 0,
+            OrderDate = request.OrderDate ?? DateTime.Now
+        };
 
-            if (existItem is null)
+        foreach (var item in request.Items)
+        {
+            var inventoryItem = await _eCommerceDbContext.InventoryItems
+                .Include(i => i.Product)
+                .FirstOrDefaultAsync(x => x.ProductId == item.ProductId
+                                          && x.Status == ProductStatus.InStock
+                                          && x.Quantity >= item.Quantity,
+                    cancellationToken: cancellationToken);
+
+            if (inventoryItem is null)
             {
-                throw new OrderItemNotExistInInventoryException(orderItem.ProductId, orderItem.Quantity);
+                throw new OrderItemNotExistInInventoryException(item.ProductId, item.Quantity);
             }
 
-            inventoryItems.Add(existItem);
+            order.OrderItems.Add(new OrderItem
+            {
+                Id = NewId.NextGuid(),
+                OrderId = order.Id,
+                ProductId = item.ProductId,
+                Product = inventoryItem.Product,
+                Quantity = item.Quantity
+            });
+
+            // Reduce the in-stock quantity and record the sold items in a separate inventory row.
+            inventoryItem.Quantity -= item.Quantity;
+
+            await _eCommerceDbContext.InventoryItems.AddAsync(new InventoryItems
+            {
+                Id = NewId.NextGuid(),
+                InventoryId = inventoryItem.InventoryId,
+                ProductId = inventoryItem.ProductId,
+                Quantity = item.Quantity,
+                Status = ProductStatus.Sold
+            }, cancellationToken);
         }
 
-        var order = Order.Create(OrderId.Of(request.Id), customer, request.DiscountType, request.DiscountValue, OrderDate.Of(request.OrderDate ?? DateTime.Now));
+        order.TotalPrice = order.OrderItems.Sum(x => x.Product.NetPrice * x.Quantity);
 
-        var orderItems = request.Items?.MapTo(order.Id, inventoryItems).ToList();
+        if (order.TotalPrice < MinimumTotalPrice)
+        {
+            throw new InvalidTotalPriceRangeException(order.TotalPrice);
+        }
 
-        order.AddItems(orderItems);
+        var regularItems = order.OrderItems.Where(x => !x.Product.IsBreakable).ToList();
+        var expressItems = order.OrderItems.Where(x => x.Product.IsBreakable).ToList();
 
-        order.CalculateTotalPrice();
+        if (regularItems.Count > 0)
+        {
+            order.TotalPrice += RegularPostPrice;
+        }
 
-        var shipmentOrderResult = order.ApplyShipment();
+        if (expressItems.Count > 0)
+        {
+            order.TotalPrice += ExpressPostPrice;
+        }
 
-        order.ApplyDiscount(request.DiscountType, request.DiscountValue);
+        order.TotalPrice = ApplyDiscount(order.TotalPrice, request.DiscountType, request.DiscountValue);
 
         await _eCommerceDbContext.Orders.AddAsync(order, cancellationToken);
 
-        if (orderItems != null)
-        {
-            await _eCommerceDbContext.OrderItems.AddRangeAsync(orderItems, cancellationToken);
-        }
-
-        return new RegisterNewOrderResult(order.Id.Value, customer.Id.Value, order.Status.ToString(), order.TotalPrice.Value,
-            order.OrderDate, shipmentOrderResult.RegularShipmentItems, shipmentOrderResult.ExpressShipmentItems,
+        return new RegisterNewOrderResult(order.Id, customer.Id, order.Status.ToString(), order.TotalPrice,
+            order.OrderDate, regularItems.Select(ToDto), expressItems.Select(ToDto),
             request.DiscountType.ToString(), request.DiscountValue);
+    }
+
+    private static decimal ApplyDiscount(decimal amount, DiscountType discountType, decimal discountValue)
+    {
+        return discountType switch
+        {
+            DiscountType.AmountDiscount => amount - (amount >= discountValue ? discountValue : 0),
+            DiscountType.PercentageDiscount => amount - (amount * discountValue / 100),
+            _ => amount
+        };
+    }
+
+    private static OrderItemDto ToDto(OrderItem orderItem)
+    {
+        return new OrderItemDto(orderItem.Id, orderItem.ProductId, orderItem.OrderId, orderItem.Quantity);
     }
 }

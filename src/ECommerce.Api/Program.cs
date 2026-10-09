@@ -1,7 +1,7 @@
-using BuildingBlocks.OpenApi;
-using BuildingBlocks.Web;
 using ECommerce;
 using ECommerce.Extensions;
+using Griffin.OpenApi;
+using Griffin.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 

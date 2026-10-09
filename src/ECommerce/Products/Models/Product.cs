@@ -1,53 +1,26 @@
-﻿namespace ECommerce.Products.Models;
+namespace ECommerce.Products.Models;
 
-using BuildingBlocks.Core.Model;
 using Categories.Models;
-using Categories.ValueObjects;
-using Features.CreatingProduct;
-using JetBrains.Annotations;
-using ValueObjects;
-using Name = ValueObjects.Name;
 
-public record Product : Aggregate<ProductId>
+public class Product
 {
-    private NetPrice _netPrice;
-    public Name Name { get; private set; }
-    public Barcode Barcode { get; private set; }
-    public Description? Description { get; private set; }
-    public Category? Category { get; private set; }
-    public CategoryId CategoryId { get; private set; }
-    public bool IsBreakable { get; private set; }
-    public Price Price { get; private set; }
-    public NetPrice NetPrice {get; private set;}
+    public Guid Id { get; set; }
 
-    public ProfitMargin? ProfitMargin { get; set; }
+    public string Name { get; set; }
 
-    public static Product Create(ProductId id, Name name, Barcode barcode, bool isBreakable,
-        CategoryId categoryId,
-        Price price,
-        ProfitMargin profitMargin,
-        Description? description = null, bool isDeleted = false)
-    {
-        var product = new Product
-        {
-            Id = id,
-            Name = name,
-            Barcode = barcode,
-            IsBreakable = isBreakable,
-            CategoryId = categoryId,
-            Description = description,
-            Price = price,
-            ProfitMargin = profitMargin,
-            IsDeleted = isDeleted,
-            NetPrice = NetPrice.Of(price.Value + profitMargin?.Value ?? 0),
-        };
+    public string Barcode { get; set; }
 
-        var @event = new ProductCreatedDomainEvent(product.Id, product.Name, product.Barcode,
-            product.IsBreakable, product.CategoryId, product.Price, product.ProfitMargin, product.NetPrice,
-            product.Description, product.IsDeleted);
+    public string? Description { get; set; }
 
-        product.AddDomainEvent(@event);
+    public Guid CategoryId { get; set; }
 
-        return product;
-    }
+    public Category? Category { get; set; }
+
+    public bool IsBreakable { get; set; }
+
+    public decimal Price { get; set; }
+
+    public decimal ProfitMargin { get; set; }
+
+    public decimal NetPrice { get; set; }
 }

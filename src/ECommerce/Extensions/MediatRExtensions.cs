@@ -1,9 +1,9 @@
-﻿namespace ECommerce.Extensions;
+namespace ECommerce.Extensions;
 
 using System.Reflection;
-using BuildingBlocks.EFCore;
-using BuildingBlocks.Logging;
-using BuildingBlocks.Validation;
+using Griffin.EFCore;
+using Griffin.Log;
+using Griffin.Validation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 

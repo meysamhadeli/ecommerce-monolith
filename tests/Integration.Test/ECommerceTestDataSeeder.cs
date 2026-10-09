@@ -1,4 +1,4 @@
-using BuildingBlocks.EFCore;
+using Griffin.EFCore;
 using ECommerce.Data;
 using ECommerce.Data.Seed;
 using Microsoft.EntityFrameworkCore;

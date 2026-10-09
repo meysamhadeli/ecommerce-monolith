@@ -1,6 +1,6 @@
-﻿namespace ECommerce.Data.Seed;
+namespace ECommerce.Data.Seed;
 
-using BuildingBlocks.EFCore;
+using Griffin.EFCore;
 using Microsoft.EntityFrameworkCore;
 
 public class ECommerceDataSeeder : IDataSeeder
