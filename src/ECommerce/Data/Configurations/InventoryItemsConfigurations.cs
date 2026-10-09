@@ -9,8 +9,6 @@ public class InventoryItemsConfigurations : IEntityTypeConfiguration<InventoryIt
 {
     public void Configure(EntityTypeBuilder<InventoryItems> builder)
     {
-        builder.ToTable(nameof(InventoryItems));
-
         builder.HasKey(r => r.Id);
         builder.Property(r => r.Id).ValueGeneratedNever();
 

@@ -16,11 +16,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
 
-# Release Drafter reads commits / pull requests and writes the draft release,
-# so the workflow token needs write access to contents and pull requests.
+# Release Drafter reads commits / pull requests and writes the draft release, and
+# phoenix-actions/test-reporting publishes the test results as a check run, so the
+# workflow token needs write access to contents, pull requests and checks.
 permissions:
   contents: write
   pull-requests: write
+  checks: write
 
 jobs:
   ci:

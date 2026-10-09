@@ -29,18 +29,10 @@ public class TestFixture<TEntryPoint> : IAsyncLifetime
             {
                 builder.ConfigureAppConfiguration(AddCustomAppSettings);
                 builder.UseEnvironment("test");
-                builder.ConfigureServices(services =>
-                {
-                    _testRegistrationServices?.Invoke(services);
 
-                    // Register all ITestDataSeeder implementations dynamically.
-                    services.Scan(scan => scan
-                        .FromApplicationDependencies()
-                        .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies())
-                        .AddClasses(classes => classes.AssignableTo<ITestDataSeeder>())
-                        .AsImplementedInterfaces()
-                        .WithScopedLifetime());
-                });
+                // Concrete test bases register their ITestDataSeeder here through
+                // TestFixtureCore.RegisterTestsServices -> RegisterServices.
+                builder.ConfigureServices(services => _testRegistrationServices?.Invoke(services));
             });
     }
 
