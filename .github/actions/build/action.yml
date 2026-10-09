@@ -34,8 +34,8 @@ runs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.x.x'
-      
+        dotnet-version: '10.0.x'
+
       # https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools
     - name: Restore .NET Tools
       shell: bash

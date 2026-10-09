@@ -1,8 +1,7 @@
-﻿namespace Integration.Test.Inventories.Features;
+namespace Integration.Test.Inventories.Features;
 
-using BuildingBlocks.TestBase;
+using ECommerce.TestBase;
 using ECommerce.Data;
-using ECommerce.Inventories.ValueObjects;
 using Fakes;
 using FluentAssertions;
 using Xunit;
@@ -25,9 +24,9 @@ public class AddingProductToInventoryTests : ECommerceIntegrationTestBase
 
         // Assert
         var result = await Fixture.ExecuteDbContextAsync(db =>
-            db.InventoryItems.FindAsync(InventoryItemsId.Of(response.Id)));
+            db.InventoryItems.FindAsync(response.Id).AsTask());
 
         result.Should().NotBeNull();
-        result?.Quantity.Value.Should().BeGreaterOrEqualTo(5);
+        result?.Quantity.Should().BeGreaterThanOrEqualTo(5);
     }
 }

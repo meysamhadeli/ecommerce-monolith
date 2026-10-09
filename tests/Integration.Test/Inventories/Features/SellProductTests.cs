@@ -1,10 +1,8 @@
-﻿namespace Integration.Test.Inventories.Features;
+namespace Integration.Test.Inventories.Features;
 
-using BuildingBlocks.TestBase;
+using ECommerce.TestBase;
 using ECommerce.Data;
 using ECommerce.Inventories.Enums;
-using ECommerce.Inventories.Models;
-using ECommerce.Products.ValueObjects;
 using Fakes;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -28,10 +26,11 @@ public class SellProductTests : ECommerceIntegrationTestBase
 
         // Assert
         var result = await Fixture.ExecuteDbContextAsync(db =>
-            db.InventoryItems.Where(x =>
-                x.ProductId == ProductId.Of(command.ProductId) && x.Status == ProductStatus.Sold).ToListAsync());
+            db.InventoryItems
+                .Where(x => x.ProductId == command.ProductId && x.Status == ProductStatus.Sold)
+                .ToListAsync());
 
-        result.Should().NotBeNull();
-        result.Select(x => x.Quantity.Value.Should().BeGreaterOrEqualTo(4));
+        result.Should().NotBeEmpty();
+        result.Should().OnlyContain(x => x.Quantity >= 4);
     }
 }

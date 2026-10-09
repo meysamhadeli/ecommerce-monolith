@@ -1,26 +1,31 @@
 ﻿namespace Unit.Test.Orders.Features;
 
-using Common;
 using ECommerce.Orders.Enums;
 using ECommerce.Orders.Features.RegisteringNewOrder;
-using Fakes;
 using FluentAssertions;
 using FluentValidation.TestHelper;
+using Unit.Test.Common;
+using Unit.Test.Fakes;
 using Xunit;
 
-[Collection(nameof(UnitTestFixture))]
-public class RegisterNewOrderTests
+public class RegisterNewOrderTests : IDisposable
 {
     private readonly UnitTestFixture _fixture;
     private readonly RegisterNewOrderHandler _handler;
 
-    public Task<RegisterNewOrderResult> Act(RegisterNewOrder command, CancellationToken cancellationToken) =>
-        _handler.Handle(command, cancellationToken);
-
-    public RegisterNewOrderTests(UnitTestFixture fixture)
+    public RegisterNewOrderTests()
     {
-        _fixture = fixture;
-        _handler = new RegisterNewOrderHandler(fixture.DbContext);
+        _fixture = new UnitTestFixture();
+        _handler = new RegisterNewOrderHandler(_fixture.DbContext);
+    }
+
+    public void Dispose() => _fixture.Dispose();
+
+    private async Task<RegisterNewOrderResult> Act(RegisterNewOrder command, CancellationToken cancellationToken)
+    {
+        var result = await _handler.Handle(command, cancellationToken);
+        await _fixture.DbContext.SaveChangesAsync(cancellationToken);
+        return result;
     }
 
     [Fact]

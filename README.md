@@ -1,7 +1,8 @@
 # 🛒 ECommerce-Monolith
 <a href="https://github.com/meysamhadeli/ecommerce-monolith/actions/workflows/ci.yml"><img alt="ci-status" src="https://github.com/meysamhadeli/ecommerce-monolith/actions/workflows/ci.yml/badge.svg?branch=main&style=flat-square"/></a>
+<a href="https://github.com/meysamhadeli/ecommerce-monolith/releases"><img alt="releases" src="https://img.shields.io/github/v/release/meysamhadeli/ecommerce-monolith?style=flat-square"/></a>
 
-> **💡 The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and DDD in .Net.** 🚀
+> **💡 The primary objective of this project is to establish a framework that can facilitate the deployment and operation of a straightforward ECommerce application using cutting-edge technologies and architecture such as Vertical Slice Architecture, CQRS, and an Anemic Domain Model in .Net.** 🚀
 
 <div>
   <a href='https://codespaces.new/meysamhadeli/ecommerce-monolith?quickstart=1'><img alt='Open in GitHub Codespaces' src='https://github.com/codespaces/badge.svg'></a>
@@ -17,12 +18,14 @@
 - [How to Run](#how-to-run)
   - [Docker Compose](#docker-compose)
   - [Documentation Apis](#documentation-apis)
+- [Release and Changelog](#release-and-changelog)
 
 ## The Goals of This Project
 
 - :sparkle: Implementing `Vertical Slice Architecture` at the architecture level to create a `scalable` and `maintainable` structure for the application.
-- :sparkle: Using `Domain Driven Design (DDD)` for implementing `business processes` and `validation rules`.
+- :sparkle: Using an `Anemic Domain Model` with `POCO` entities and pushing `business processes` and `validation rules` into the `handlers` for simplicity.
 - :sparkle: Adopting `CQRS` implementation with the `MediatR` library for better separation of `write` and `read` operations.
+- :sparkle: Reusing shared building blocks from the [`Griffin`](https://github.com/meysamhadeli/Griffin) repository as a `git submodule` under `src/BuildingBlocks`.
 - :sparkle: Implementing `MediatR` to `reduce coupling` and provide support for managing `cross-cutting concerns` within `pipelines`, including `validation` and `transaction handling` for the application.
 - :sparkle: Using `Postgres` as our `relational database` management system at the database level.
 - :sparkle: Incorporating `Unit Testing`, `Integration Testing`, and `End To End Testing` for testing level to ensure the `robustness` and `reliability` of the application.
@@ -33,14 +36,13 @@
 
 ## Technologies - Libraries
 
-- ✔️ **[`.NET 9`](https://github.com/dotnet/aspnetcore)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core.
+- ✔️ **[`.NET 10`](https://github.com/dotnet/aspnetcore)** - .NET Framework and .NET Core, including ASP.NET and ASP.NET Core.
 - ✔️ **[`MVC Versioning API`](https://github.com/microsoft/aspnet-api-versioning)** - Set of libraries which add service API versioning to ASP.NET Web API, OData with ASP.NET Web API, and ASP.NET Core.
 - ✔️ **[`EF Core`](https://github.com/dotnet/efcore)** - Modern object-database mapper for .NET. It supports LINQ queries, change tracking, updates, and schema migrations.
 - ✔️ **[`AspNetCore OpenApi`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/openapi/aspnetcore-openapi?view=aspnetcore-9.0&tabs=visual-studio#configure-openapi-document-generation)** - Provides built-in support for OpenAPI document generation in ASP.NET Core.
 - ✔️ **[`MediatR`](https://github.com/jbogard/MediatR)** - Simple, unambitious mediator implementation in .NET.
 - ✔️ **[`FluentValidation`](https://github.com/FluentValidation/FluentValidation)** - Popular .NET validation library for building strongly-typed validation rules.
 - ✔️ **[`Swagger & Swagger UI`](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)** - Swagger tools for documenting API's built on ASP.NET Core.
-- ✔️ **[`Serilog`](https://github.com/serilog/serilog)** - Simple .NET logging with fully-structured events.
 - ✔️ **[`Scrutor`](https://github.com/khellang/Scrutor)** - Assembly scanning and decoration extensions for Microsoft.Extensions.DependencyInjection.
 - ✔️ **[`AutoMapper`](https://github.com/AutoMapper/AutoMapper)** - Convention-based object-object mapper in .NET.
 - ✔️ **[`NewId`](https://github.com/phatboyg/NewId)** - NewId can be used as an embedded unique ID generator that produces 128 bit (16 bytes) sequential IDs.
@@ -54,7 +56,7 @@
 
 In this project I used [vertical slice architecture](https://jimmybogard.com/vertical-slice-architecture/) and [feature folder structure](http://www.kamilgrzybek.com/design/feature-folders/) to structure my files.
 
-To `reduce coupling` in our code, we leverage `Mediatr` and `build pipelines` on top of it to handle `validation`, `logging`, and `transactions`. Our `domain` follows `Domain-Driven Design` principles and employs `value objects` for `business logic`. We also incorporate validation into our business processes. When we complete work within our domain, it raises a `domain event`. Depending on the requirements, we can then react to this event and take appropriate action to further our business goals.
+To `reduce coupling` in our code, we leverage `Mediatr` and `build pipelines` on top of it to handle `validation`, `logging`, and `transactions`. Our `domain` follows an `Anemic Domain Model`: entities are plain `POCO`s that hold only `state`, while all `business logic` and `validation rules` live in the `command handlers`. This keeps the model simple and moves behavior close to the use case that needs it.
 
 I `treat each request` as a `distinct` use case or `slice`, `encapsulating` and `grouping` `all concerns` from front-end to back with `vertical slice architecture`.
 In traditional approach like `clean architecture`, When `adding` or `changing` a feature in an application in n-tire architecture, we are typically `touching many layers` in an application. We are changing the user interface, adding fields to models, modifying validation, and so on. Instead of `coupling across` a layer in traditional architecture, we `couple vertically along a slice`. We `minimize coupling` `between slices`, and `maximize coupling` `in a slice`.
@@ -74,6 +76,19 @@ With `CQRS`, we can `reduce coupling` between layers and tune down specific meth
 Overall, by using the `REPR` pattern and `CQRS` with the `Mediator` pattern, we can create a `better-structured` and more `maintainable` application, with improved `separation of concerns`.
 
 ## Development Setup
+
+### Clone the Repository
+
+This repository uses the [`Griffin`](https://github.com/meysamhadeli/Griffin) building blocks as a `git submodule` at `src/BuildingBlocks`, so clone it with submodules:
+
+```bash
+git clone --recurse-submodules https://github.com/meysamhadeli/ecommerce-monolith.git
+```
+
+If you already cloned without submodules, initialize them with:
+```bash
+git submodule update --init --recursive
+```
 
 ### Dotnet Tools Packages
 For installing our requirement package with .NET cli tools, we need to install `dotnet tool manifest`.
@@ -98,6 +113,31 @@ docker-compose -f ./deployments/docker-compose/docker-compose.yml up -d
 > ### Documentation Apis
 
 Each microservice provides `API documentation` and navigate to `/swagger` for `Swagger OpenAPI` or `/scalar/v1` for `Scalar OpenAPI` to visit list of endpoints.
+
+# Release and Changelog
+
+Releases are fully automated with [`Release Drafter`](https://github.com/release-drafter/release-drafter) and the workflow files live in [`.github`](./.github):
+
+- **`.github/workflows/ci.yml`** — on every push / pull request to `main` and `develop` it restores, builds and tests the solution, and on `main` it refreshes a **draft** GitHub release and publishes the Docker image.
+- **`.github/workflows/release-drafter-labeler.yml`** — labels every pull request from its branch name / body, so the changelog categories get filled in.
+- **`.github/workflows/release.yml`** — published manually (**Actions → Release → Run workflow**) to turn the current draft into a real GitHub Release and create the matching `v*` git tag.
+- **`.github/release-drafter.yml`** — the configuration: changelog categories, `version-resolver` and `autolabeler` rules.
+
+The changelog is generated from the commits / pull requests since the previous tag, grouped by label. To get your change in the right group, follow the [Conventional Commits](https://www.conventionalcommits.org) style — either in the **branch name** or by adding a **label** to the pull request:
+
+| Prefix / Label | Changelog group |
+| --- | --- |
+| `feat/` · `feature` | 🚀 Features |
+| `fix/` · `bug` | 🐛 Bug Fixes |
+| `test/` · `test` | 🧪 Test |
+| `ci/` · `ci` | 👷 CI |
+| `refactor/` · `refactor` | ♻️ Changes |
+| `docs/` · `docs` | 📄 Documentation |
+| `chore/` · `chore` | 🧰 Maintenance |
+| `security/` · `security` | 🔐 Security |
+| `deps/` · `dependencies` | 🧩 Dependency Updates |
+
+The next version is resolved from the labels: `major` → major, `minor` → minor, anything else → patch (see `version-resolver` in `.github/release-drafter.yml`).
 
 # Support
 

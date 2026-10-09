@@ -1,15 +1,13 @@
-﻿namespace ECommerce.Inventories.Features.AddingProductToInventory;
+namespace ECommerce.Inventories.Features.AddingProductToInventory;
 
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Core.CQRS;
-using BuildingBlocks.Core.Event;
-using BuildingBlocks.Web;
 using Data;
 using Enums;
-using ValueObjects;
-using ECommerce.Products.ValueObjects;
 using FluentValidation;
+using Griffin.Core.CQRS;
+using Griffin.Core.Event;
+using Griffin.Web;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -17,12 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Models;
-
-public record ProductAddedToInventoryDomainEvent
-    (Guid Id, Guid InventoryId, Guid ProductId, ProductStatus Status, int Quantity) : IDomainEvent;
-
-public record ProductUpdatedToInventoryDomainEvent
-    (Guid Id, Guid InventoryId, Guid ProductId, ProductStatus Status, int Quantity) : IDomainEvent;
 
 public record AddProductToInventory(Guid InventoryId, Guid ProductId, int Quantity) : ICommand<AddProductToInventoryResult>
 {
@@ -58,7 +50,6 @@ public class AddProductToInventoryEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Inventory").Build())
             .Produces<AddProductToInventoryResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;
@@ -88,29 +79,31 @@ public class AddProductToInventoryHandler : ICommandHandler<AddProductToInventor
     {
         Guard.Against.Null(request, nameof(request));
 
-        var productInventoryItems = await _eCommerceDbContext.InventoryItems
+        var existingInventoryItem = await _eCommerceDbContext.InventoryItems
             .SingleOrDefaultAsync(
-                x => x.ProductId == ProductId.Of(request.ProductId) && x.Status == ProductStatus.InStock,
+                x => x.ProductId == request.ProductId && x.Status == ProductStatus.InStock,
                 cancellationToken: cancellationToken);
 
-        if (productInventoryItems is not null)
+        if (existingInventoryItem is not null)
         {
-            productInventoryItems.UpdateProductToInventory(productInventoryItems.Id,
-                InventoryId.Of(request.InventoryId),
-                ProductId.Of(request.ProductId),
-                Quantity.Of(request.Quantity + productInventoryItems.Quantity.Value));
+            existingInventoryItem.Quantity += request.Quantity;
 
-            _eCommerceDbContext.InventoryItems.Update(productInventoryItems);
-            return new AddProductToInventoryResult(productInventoryItems.Id.Value);
+            _eCommerceDbContext.InventoryItems.Update(existingInventoryItem);
+
+            return new AddProductToInventoryResult(existingInventoryItem.Id);
         }
 
-        var productInventoryItemsEntity = InventoryItems.AddProductToInventory(InventoryItemsId.Of(request.Id),
-            InventoryId.Of(request.InventoryId),
-            ProductId.Of(request.ProductId),
-            Quantity.Of(request.Quantity));
+        var inventoryItem = new InventoryItems
+        {
+            Id = request.Id,
+            InventoryId = request.InventoryId,
+            ProductId = request.ProductId,
+            Quantity = request.Quantity,
+            Status = ProductStatus.InStock
+        };
 
-        await _eCommerceDbContext.InventoryItems.AddAsync(productInventoryItemsEntity, cancellationToken);
+        await _eCommerceDbContext.InventoryItems.AddAsync(inventoryItem, cancellationToken);
 
-        return new AddProductToInventoryResult(productInventoryItemsEntity.Id.Value);
+        return new AddProductToInventoryResult(inventoryItem.Id);
     }
 }

@@ -2,8 +2,8 @@
 
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Core.Pagination;
-using BuildingBlocks.Web;
+using Griffin.Core.Pagination;
+using Griffin.Web;
 using Data;
 using Dtos;
 using FluentValidation;
@@ -61,7 +61,6 @@ public class GetProductsByPageEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Catalog").Build())
             .Produces<GetProductsByPageResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;

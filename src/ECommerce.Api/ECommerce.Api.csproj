@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <ItemGroup>
-    <ProjectReference Include="..\ECommerce\ECommerce.csproj" />
+  <ItemGroup>    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>    <ProjectReference Include="..\ECommerce\ECommerce.csproj" />
+    <ProjectReference Include="..\BuildingBlocks\src\OpenApi\Griffin.OpenApi.csproj" />
   </ItemGroup>
 
 </Project>

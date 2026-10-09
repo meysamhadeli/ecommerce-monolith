@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Orders.Exceptions;
 
-using BuildingBlocks.Exception;
+using Griffin.Core.Exception;
 
 public class InvalidTotalPriceException : BadRequestException
 {

@@ -28,6 +28,10 @@ inputs:
   no-restore:
     description: No restore nuget packages, but building tests because they don't build in the build composition action
     default: 'true'
+  test-results-name:
+    description: File name of the .trx test result file, use a unique name per test project so reports don't overlap
+    required: false
+    default: 'test-results.trx'
 
 # https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#runs-for-composite-actions
 runs:
@@ -54,10 +58,10 @@ runs:
           echo "Testing $file"
           if [ ${{ inputs.no-restore }} == 'true' ]; then
              echo "run tests in no-restore mode"
-             dotnet test "$file" -c Release --no-restore --logger "trx;LogFileName=test-results.trx" || true
+             dotnet test "$file" -c Release --no-restore --logger "trx;LogFileName=${{ inputs.test-results-name }}" || true
           else
              echo "run tests in restore nuget mode"
-             dotnet test "$file" -c Release --logger "trx;LogFileName=test-results.trx" || true
+             dotnet test "$file" -c Release --logger "trx;LogFileName=${{ inputs.test-results-name }}" || true
           fi
         done
 
@@ -76,7 +80,7 @@ runs:
         token: ${{ inputs.token }}
         # only-summary: 'true'
         output-to: "step-summary"
-        path: "**/test-results.trx"
+        path: "**/${{ inputs.test-results-name }}"
         # Set action as failed if test report contains any failed test
         fail-on-error: true
         ## https://github.com/dorny/test-reporter#recommended-setup-for-public-repositories

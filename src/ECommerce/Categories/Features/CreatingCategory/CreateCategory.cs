@@ -1,20 +1,19 @@
-﻿namespace ECommerce.Categories.Features.CreatingCategory;
+namespace ECommerce.Categories.Features.CreatingCategory;
 
 using Ardalis.GuardClauses;
 using AutoMapper;
-using BuildingBlocks.Core.CQRS;
-using BuildingBlocks.Core.Event;
-using BuildingBlocks.Web;
 using Data;
 using Exceptions;
 using FluentValidation;
+using Griffin.Core.CQRS;
+using Griffin.Core.Event;
+using Griffin.Web;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using ValueObjects;
 
 public record CreateCategory(string Name) : ICommand<CreateCategoryResult>
 {
@@ -22,8 +21,6 @@ public record CreateCategory(string Name) : ICommand<CreateCategoryResult>
 }
 
 public record CreateCategoryResult(Guid Id);
-
-public record CategoryCreatedDomainEvent(Guid Id, string Name, bool IsDeleted) : IDomainEvent;
 
 public record CreateCategoryRequestDto(string Name);
 
@@ -51,7 +48,6 @@ public class CreateCategoryEndpoint : IMinimalEndpoint
             .WithApiVersionSet(builder.NewApiVersionSet("Catalog").Build())
             .Produces<CreateCategoryResponseDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .WithOpenApi()
             .HasApiVersion(1.0);
 
         return builder;
@@ -79,17 +75,22 @@ public class CreateCategoryHandler : ICommandHandler<CreateCategory, CreateCateg
     {
         Guard.Against.Null(request, nameof(request));
 
-        var category = await _eCommerceDbContext.Categories.SingleOrDefaultAsync(x => x.Id == CategoryId.Of(request.Id), cancellationToken);
+        var categoryExists = await _eCommerceDbContext.Categories
+            .AnyAsync(x => x.Id == request.Id, cancellationToken);
 
-        if (category is not null)
+        if (categoryExists)
         {
             throw new CategoryAlreadyExistException();
         }
 
-        var categoryEntity = Models.Category.Create(CategoryId.Of(request.Id), Name.Of(request.Name));
+        var category = new Models.Category
+        {
+            Id = request.Id,
+            Name = request.Name
+        };
 
-        var newCategory = (await _eCommerceDbContext.Categories.AddAsync(categoryEntity, cancellationToken)).Entity;
+        await _eCommerceDbContext.Categories.AddAsync(category, cancellationToken);
 
-        return new CreateCategoryResult(newCategory.Id.Value);
+        return new CreateCategoryResult(category.Id);
     }
 }

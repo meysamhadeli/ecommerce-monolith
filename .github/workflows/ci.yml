@@ -2,23 +2,47 @@ name: CI
 
 on:
   push:
-    branches: [ "main" , "develop" ]
+    branches: [ "main", "develop" ]
     paths-ignore:
       - "README.md"
+      - "docs/**"
   pull_request:
-    branches: [ "main" , "develop" ]
+    branches: [ "main", "develop" ]
     paths-ignore:
       - "README.md"
+      - "docs/**"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.sha }}
   cancel-in-progress: true
+
+# Release Drafter reads commits / pull requests and writes the draft release, and
+# phoenix-actions/test-reporting publishes the test results as a check run, so the
+# workflow token needs write access to contents, pull requests and checks.
+permissions:
+  contents: write
+  pull-requests: write
+  checks: write
 
 jobs:
   ci:
     runs-on: ubuntu-latest
 
+    # Exposed as an env var so the Docker step can be skipped when the
+    # DockerHub credentials are not configured (secrets are not available
+    # inside step-level `if` conditions).
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+
     steps:
-      - uses: actions/checkout@v4
+      # `src/BuildingBlocks` is the "Griffin" git submodule. Every project references
+      # it through <ProjectReference Include="..\BuildingBlocks\src\**\*.csproj" />,
+      # so it must be checked out recursively or the restore / build fails.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Build ECommerce
         uses: ./.github/actions/build
@@ -27,17 +51,69 @@ jobs:
         with:
           project-path: 'src/ECommerce.Api'
           service-name: 'ECommerce'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test ECommerce
+      - name: Test ECommerce (Unit)
         uses: ./.github/actions/test
         if: success()
-        id: test-ecommerce-step
+        id: test-ecommerce-unit-step
         with:
-          tests-path: 'tests/'
+          tests-path: 'tests/Unit.Test'
+          test-results-name: 'unit-test-results.trx'
+          # wildcard search for files with the ".cobertura.xml" extension in all subdirectories of the current directory
+          # https://www.jamescroft.co.uk/combining-multiple-code-coverage-results-in-azure-devops/
+          # https://stackoverflow.com/questions/53255065/dotnet-unit-test-with-coverlet-how-to-get-coverage-for-entire-solution-and-not
           reports-path: ${{ github.workspace }}/**/*.cobertura.xml
           reports-output-path: ${{ github.workspace }}/output/test-results
-          service-name: 'ECommerce'
+          service-name: 'ECommerce Unit'
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Test ECommerce (Integration)
+        uses: ./.github/actions/test
+        if: success()
+        id: test-ecommerce-integration-step
+        with:
+          tests-path: 'tests/Integration.Test'
+          test-results-name: 'integration-test-results.trx'
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
+          service-name: 'ECommerce Integration'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Test ECommerce (End To End)
+        uses: ./.github/actions/test
+        if: success()
+        id: test-ecommerce-e2e-step
+        with:
+          tests-path: 'tests/EndToEnd.Test'
+          test-results-name: 'endtoend-test-results.trx'
+          reports-path: ${{ github.workspace }}/**/*.cobertura.xml
+          reports-output-path: ${{ github.workspace }}/output/test-results
+          service-name: 'ECommerce End To End'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Keeps a *draft* GitHub release up to date on every push to `main`, with the
+      # changelog generated from the commits / pull requests resolved by
+      # `.github/release-drafter.yml` (categories, version-resolver, autolabeler).
+      # Run the `Release` workflow to turn that draft into a published release + tag.
+      - name: Update Release Drafter
+        if: ${{ github.ref == 'refs/heads/main' && success() }}
+        id: last_release
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Version Info
+        if: ${{ github.ref == 'refs/heads/main' && success() }}
+        run: echo "Release version is:" ${{ steps.last_release.outputs.tag_name }}
+
+      - name: Build and Publish ECommerce to DockerHub
+        if: ${{ github.ref == 'refs/heads/main' && success() && env.DOCKERHUB_USERNAME != '' }}
+        uses: ./.github/actions/docker-build-publish
+        with:
+          tag-name: ${{ steps.last_release.outputs.tag_name }}
+          registry-username: ${{ secrets.DOCKERHUB_USERNAME }}
+          registry-password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          dockerfile-path: 'Dockerfile'
+          image-name: 'ecommerce-monolith'

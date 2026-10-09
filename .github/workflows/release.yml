@@ -1,0 +1,41 @@
+name: Release
+
+# Publishes the draft release that the CI workflow keeps up to date.
+#
+# Every push to `main` refreshes a *draft* release whose changelog is generated
+# from the commits / pull requests since the previous tag (see
+# `.github/release-drafter.yml`). Running this workflow turns that draft into a
+# real GitHub Release and creates the matching git tag.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 1.2.3 (leave empty to use the version resolved from labels)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Publish Release
+        id: release
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+          publish: true
+          version: ${{ inputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Summary
+        run: |
+          echo "### 🚀 Published ${{ steps.release.outputs.tag_name }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.release.outputs.body }}" >> "$GITHUB_STEP_SUMMARY"

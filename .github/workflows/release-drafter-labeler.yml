@@ -9,13 +9,19 @@ on:
       - labeled
       - unlabeled
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
- auto-labeler:
-   runs-on: ubuntu-latest
-   steps:
-     - uses: release-drafter/release-drafter@v5
-       with:
-         config-name: release-drafter.yml
-         disable-releaser: true # only run auto-labeler for PRs
-       env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  auto-labeler:
+    runs-on: ubuntu-latest
+    steps:
+      # Labels the pull request from its branch name / body so the changelog
+      # categories in `.github/release-drafter.yml` get filled in correctly.
+      - uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.yml
+          disable-releaser: true # only run auto-labeler for PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

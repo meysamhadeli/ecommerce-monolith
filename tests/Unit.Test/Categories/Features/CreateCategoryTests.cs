@@ -1,45 +1,34 @@
-﻿namespace Unit.Test.Categories.Features;
+namespace Unit.Test.Categories.Features;
 
+using ECommerce.Categories.Exceptions;
 using ECommerce.Categories.Features.CreatingCategory;
-using ECommerce.Categories.ValueObjects;
 using FluentAssertions;
-using FluentValidation.TestHelper;
 using Unit.Test.Common;
 using Unit.Test.Fakes;
 using Xunit;
 
-[Collection(nameof(UnitTestFixture))]
-public class CreateCategoryTests
+public class CreateCategoryTests : IDisposable
 {
     private readonly UnitTestFixture _fixture;
     private readonly CreateCategoryHandler _handler;
 
-    public Task<CreateCategoryResult> Act(CreateCategory command, CancellationToken cancellationToken) =>
-        _handler.Handle(command, cancellationToken);
-
-    public CreateCategoryTests(UnitTestFixture fixture)
+    public CreateCategoryTests()
     {
-        _fixture = fixture;
-        _handler = new CreateCategoryHandler(fixture.DbContext);
+        _fixture = new UnitTestFixture();
+        _handler = new CreateCategoryHandler(_fixture.DbContext);
+    }
+
+    public void Dispose() => _fixture.Dispose();
+
+    private async Task<CreateCategoryResult> Act(CreateCategory command, CancellationToken cancellationToken)
+    {
+        var result = await _handler.Handle(command, cancellationToken);
+        await _fixture.DbContext.SaveChangesAsync(cancellationToken);
+        return result;
     }
 
     [Fact]
-    public void is_valid_should_be_false_when_validation_parameters_is_invalid()
-    {
-        // Arrange
-        var command = new FakeValidateCreateCategory().Generate();
-        var validator = new CreateCategoryValidator();
-
-        // Act
-        var result = validator.TestValidate(command);
-
-        // Assert
-        result.IsValid.Should().BeFalse();
-        result.ShouldHaveValidationErrorFor(x => x.Name);
-    }
-
-    [Fact]
-    public async Task handler_with_valid_command_should_create_new_category_and_return_currect_create_category_result()
+    public async Task handler_with_valid_command_should_create_new_category_and_return_currect_category_dto()
     {
         // Arrange
         var command = new FakeCreateCategoryCommand().Generate();
@@ -48,23 +37,37 @@ public class CreateCategoryTests
         var response = await Act(command, CancellationToken.None);
 
         // Assert
-        var entity = await _fixture.DbContext.Categories.FindAsync(CategoryId.Of(response.Id));
+        var entity = await _fixture.DbContext.Categories.FindAsync(response.Id);
 
-        entity?.Should().NotBeNull();
-        response?.Id.Should().Be(entity.Id.Value);
+        entity.Should().NotBeNull();
+        entity?.Id.Should().Be(response.Id);
+        entity?.Name.Should().Be(command.Name);
     }
 
     [Fact]
-    public async Task handler_with_null_command_should_throw_argument_exception()
+    public async Task handler_with_null_command_should_throw_argument_null_exception()
     {
         // Arrange
         CreateCategory command = null;
 
         // Act
-        Func<Task> act = async () => { await Act(command, CancellationToken.None); };
+        var act = async () => await Act(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<ArgumentNullException>();
     }
-}
 
+    [Fact]
+    public async Task handler_with_existing_category_should_throw_category_already_exist_exception()
+    {
+        // Arrange
+        var command = new FakeCreateCategoryCommand().Generate();
+        await Act(command, CancellationToken.None);
+
+        // Act
+        var act = async () => await Act(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<CategoryAlreadyExistException>();
+    }
+}

@@ -1,19 +1,23 @@
-﻿namespace ECommerce.Data;
+namespace ECommerce.Data;
 
-using BuildingBlocks.EFCore;
 using Categories.Models;
 using Customers.Models;
+using Griffin.EFCore;
 using Inventories.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Orders.Models;
-using Orders.ValueObjects;
 using Products.Models;
 
 public sealed class ECommerceDbContext : AppDbContextBase
 {
-    public ECommerceDbContext(DbContextOptions<ECommerceDbContext> options) : base(options)
+    public ECommerceDbContext(
+        DbContextOptions<ECommerceDbContext> options,
+        ILogger<ECommerceDbContext>? logger = null)
+        : base(options, logger: logger)
     {
     }
+
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Inventory> Inventories => Set<Inventory>();

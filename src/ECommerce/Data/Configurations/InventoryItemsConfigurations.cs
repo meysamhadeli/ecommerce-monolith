@@ -1,8 +1,7 @@
-﻿namespace ECommerce.Data.Configurations;
+namespace ECommerce.Data.Configurations;
 
 using Inventories.Enums;
 using Inventories.Models;
-using Inventories.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,14 +9,8 @@ public class InventoryItemsConfigurations : IEntityTypeConfiguration<InventoryIt
 {
     public void Configure(EntityTypeBuilder<InventoryItems> builder)
     {
-        builder.ToTable(nameof(InventoryItems));
-
         builder.HasKey(r => r.Id);
-        builder.Property(r => r.Id).ValueGeneratedNever()
-            .HasConversion<Guid>(inventoryItemsId => inventoryItemsId.Value, dbId => InventoryItemsId.Of(dbId));
-
-
-        builder.Property(r => r.Version).IsConcurrencyToken();
+        builder.Property(r => r.Id).ValueGeneratedNever();
 
         builder.Property(x => x.Status)
             .IsRequired()
@@ -26,16 +19,8 @@ public class InventoryItemsConfigurations : IEntityTypeConfiguration<InventoryIt
                 x => x.ToString(),
                 x => (ProductStatus)Enum.Parse(typeof(ProductStatus), x));
 
-        builder.OwnsOne(
-            x => x.Quantity,
-            a =>
-            {
-                a.Property(p => p.Value)
-                    .HasColumnName(nameof(InventoryItems.Quantity))
-                    .HasMaxLength(20)
-                    .IsRequired();
-            }
-        );
+        builder.Property(x => x.Quantity)
+            .IsRequired();
 
         builder.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId);
         builder.HasOne(x => x.Inventory).WithMany().HasForeignKey(x => x.InventoryId);

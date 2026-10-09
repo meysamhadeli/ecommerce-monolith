@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Categories.Exceptions;
 
-using BuildingBlocks.Exception;
+using Griffin.Core.Exception;
 
 public class InvalidCategoryIdExceptions : BadRequestException
 {

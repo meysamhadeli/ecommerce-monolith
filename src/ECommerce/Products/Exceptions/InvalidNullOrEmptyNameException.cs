@@ -1,6 +1,6 @@
 ﻿namespace ECommerce.Products.Exceptions;
 
-using BuildingBlocks.Exception;
+using Griffin.Core.Exception;
 
 public class InvalidNullOrEmptyNameException : BadRequestException
 {
