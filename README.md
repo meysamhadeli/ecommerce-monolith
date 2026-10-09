@@ -18,8 +18,7 @@
 - [How to Run](#how-to-run)
   - [Docker Compose](#docker-compose)
   - [Documentation Apis](#documentation-apis)
-- [Release and Changelog](#release-and-changelog)
-
+  
 ## The Goals of This Project
 
 - :sparkle: Implementing `Vertical Slice Architecture` at the architecture level to create a `scalable` and `maintainable` structure for the application.
@@ -113,31 +112,6 @@ docker-compose -f ./deployments/docker-compose/docker-compose.yml up -d
 > ### Documentation Apis
 
 Each microservice provides `API documentation` and navigate to `/swagger` for `Swagger OpenAPI` or `/scalar/v1` for `Scalar OpenAPI` to visit list of endpoints.
-
-# Release and Changelog
-
-Releases are fully automated with [`Release Drafter`](https://github.com/release-drafter/release-drafter) and the workflow files live in [`.github`](./.github):
-
-- **`.github/workflows/ci.yml`** — on every push / pull request to `main` and `develop` it restores, builds and tests the solution, and on `main` it refreshes a **draft** GitHub release and publishes the Docker image.
-- **`.github/workflows/release-drafter-labeler.yml`** — labels every pull request from its branch name / body, so the changelog categories get filled in.
-- **`.github/workflows/release.yml`** — published manually (**Actions → Release → Run workflow**) to turn the current draft into a real GitHub Release and create the matching `v*` git tag.
-- **`.github/release-drafter.yml`** — the configuration: changelog categories, `version-resolver` and `autolabeler` rules.
-
-The changelog is generated from the commits / pull requests since the previous tag, grouped by label. To get your change in the right group, follow the [Conventional Commits](https://www.conventionalcommits.org) style — either in the **branch name** or by adding a **label** to the pull request:
-
-| Prefix / Label | Changelog group |
-| --- | --- |
-| `feat/` · `feature` | 🚀 Features |
-| `fix/` · `bug` | 🐛 Bug Fixes |
-| `test/` · `test` | 🧪 Test |
-| `ci/` · `ci` | 👷 CI |
-| `refactor/` · `refactor` | ♻️ Changes |
-| `docs/` · `docs` | 📄 Documentation |
-| `chore/` · `chore` | 🧰 Maintenance |
-| `security/` · `security` | 🔐 Security |
-| `deps/` · `dependencies` | 🧩 Dependency Updates |
-
-The next version is resolved from the labels: `major` → major, `minor` → minor, anything else → patch (see `version-resolver` in `.github/release-drafter.yml`).
 
 # Support
 
